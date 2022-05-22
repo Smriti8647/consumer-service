@@ -1,0 +1,72 @@
+package com.tweetapp.controller;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.tweetapp.model.Tweet;
+import com.tweetapp.model.User;
+import com.tweetapp.service.TweetServiceImpl;
+import com.tweetapp.service.UserServiceImpl;
+
+@RestController
+public class UpdateController{
+
+	@Autowired
+	UserServiceImpl userService;
+	
+	@Autowired
+	TweetServiceImpl tweetService;
+
+	@PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> registerUser(@RequestBody User user) {
+		String res=userService.saveUser(user); 
+//		return new ResponseEntity<>("Succesfully registerd the user with loginId"+user.getLoginId(),HttpStatus.OK);
+		return new ResponseEntity<>(res,HttpStatus.OK);
+	}
+	
+	@GetMapping("/allusers")
+	public List<User> allUsers() {
+		return userService.getAllUsers();
+	}
+	
+	@GetMapping("/user/{loginId}")
+	public User singleUser(@PathVariable String loginId) {
+		System.out.println("loginId");
+		return userService.getUser(loginId);
+	}
+	
+	@GetMapping("tweets")
+	public List<Tweet> tweets(){
+		return tweetService.getAllTweets();
+	}
+	
+	@GetMapping("tweets/{loginId}")
+	public List<Tweet> tweets(@PathVariable String loginId){
+		return tweetService.getTweetByUsername(loginId);	
+	}
+	
+	@PostMapping("addtweet/{loginId}")
+	public ResponseEntity<String> addTweet(@RequestBody Tweet tweet){
+//	public ResponseEntity<String> addTweet(){
+//		Tweet tweet=new Tweet();
+//			tweet.setLoginId("smriti");
+//			tweet.setAvtar("avtar1");
+//			tweet.setMessage("Anybody up for game?");
+//			tweet.setLike(true);
+//			tweet.setNoOfLikes(4);
+//			tweet.setTime(LocalDateTime.now());
+		tweetService.postTweet(tweet);
+		return new ResponseEntity<>("Successfully tweet added for loginId "+tweet.getLoginId(),HttpStatus.OK);
+	}
+}
