@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tweetapp.model.LoginResponse;
 import com.tweetapp.model.Tweet;
 import com.tweetapp.model.User;
 import com.tweetapp.model.UserResponse;
@@ -45,6 +46,11 @@ public class UpdateController{
 		return userService.getUser(loginId);
 	}
 	
+	@GetMapping("login/{loginId}")
+	public LoginResponse login(@PathVariable String loginId){
+		return userService.login(loginId);
+	}
+	
 	@GetMapping("tweets")
 	public List<Tweet> tweets(){
 		return tweetService.getAllTweets();
@@ -57,14 +63,6 @@ public class UpdateController{
 	
 	@PostMapping("addtweet/{loginId}")
 	public ResponseEntity<String> addTweet(@RequestBody Tweet tweet){
-//	public ResponseEntity<String> addTweet(){
-//		Tweet tweet=new Tweet();
-//			tweet.setLoginId("smriti");
-//			tweet.setAvtar("avtar1");
-//			tweet.setMessage("Anybody up for game?");
-//			tweet.setLike(true);
-//			tweet.setNoOfLikes(4);
-//			tweet.setTime(LocalDateTime.now());
 		tweetService.postTweet(tweet);
 		return new ResponseEntity<>("Successfully tweet added for loginId "+tweet.getLoginId(),HttpStatus.OK);
 	}

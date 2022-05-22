@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tweetapp.exceptions.ResourceNotFoundException;
+import com.tweetapp.model.LoginResponse;
 import com.tweetapp.model.User;
 import com.tweetapp.model.UserResponse;
 import com.tweetapp.repository.UserRepository;
@@ -26,6 +27,7 @@ public class UserServiceImpl implements UserService {
 		} else if (isUserWithEmailPresent) {
 			return "this email id is already registered";
 		} else {
+			user.setRole("ROLE_USER");
 			userRepository.save(user);
 			return "successful with id " + user.getLoginId();
 		}
@@ -60,6 +62,18 @@ public class UserServiceImpl implements UserService {
 		});
 		//userResposne=populateUserResponse()
 		return userResponseList;
+	}
+	
+	public LoginResponse login(String loginId) {
+		LoginResponse loginResponse= new LoginResponse();
+		Optional<User> user = userRepository.findById(loginId);
+		if (!user.isPresent()) {
+			throw new ResourceNotFoundException("User not present in Database");
+		}
+		loginResponse.setLoginId(user.get().getLoginId());
+		loginResponse.setPassword(user.get().getPassword());
+		loginResponse.setRole(user.get().getRole());
+		return loginResponse;
 	}
 
 }
