@@ -1,5 +1,6 @@
 package com.tweetapp.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,40 +9,57 @@ import org.springframework.stereotype.Service;
 
 import com.tweetapp.exceptions.ResourceNotFoundException;
 import com.tweetapp.model.User;
+import com.tweetapp.model.UserResponse;
 import com.tweetapp.repository.UserRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	public String saveUser(User user) {
-		Boolean isUserPresent=userRepository.findUserByEmail(user.getEmail()).isPresent();
-		if(isUserPresent) {
-			//need to throw exception here
-			return "this email id is already registered"; 
-		}
-		else {
+		Boolean isUserWithEmailPresent = userRepository.findUserByEmail(user.getEmail()).isPresent();
+		Boolean isUserWithIdPresent = userRepository.findById(user.getLoginId()).isPresent();
+		if (isUserWithIdPresent) {
+			return "this login id is already registered";
+		} else if (isUserWithEmailPresent) {
+			return "this email id is already registered";
+		} else {
 			userRepository.save(user);
-			return "successful with id "+user.getLoginId();
-		}		
+			return "successful with id " + user.getLoginId();
+		}
 	}
-	
-	public User getUser(String loginId) {
+
+	public UserResponse getUser(String loginId) {
 		Optional<User> user = userRepository.findById(loginId);
 		if (!user.isPresent()) {
-			throw new ResourceNotFoundException("User not present in Database");		
+			throw new ResourceNotFoundException("User not present in Database");
 		}
-		return user.get();
+		return populateUserResponse(user.get());
 	}
-	
-	public List<User> getAllUsers() {
+
+	private UserResponse populateUserResponse(User user) {
+		UserResponse userResponse=new UserResponse();
+		userResponse.setAvtar(user.getAvtar());
+		userResponse.setLoginId(user.getLoginId());
+		userResponse.setName(user.getFirstName());
+		return userResponse;
+	}
+
+	public List<UserResponse> getAllUsers() {
 		List<User> userList = userRepository.findAll();
-		if(userList.isEmpty()) {
+		if (userList.isEmpty()) {
 			throw new ResourceNotFoundException("No user Present in Database");
-		}
-		return userList;
+		}		
+		List<UserResponse> userResponseList=new ArrayList<>();
+		userList.forEach(user->{
+			UserResponse userResposne=new UserResponse();
+			userResposne=populateUserResponse(user);
+			userResponseList.add(userResposne);
+		});
+		//userResposne=populateUserResponse()
+		return userResponseList;
 	}
 
 }
