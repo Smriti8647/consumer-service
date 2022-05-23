@@ -10,13 +10,20 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Tweet {
 	
 	@Id
+	private String id;
 	private String loginId;
 	private String avtar;
 	private String message;
 	private LocalDateTime time;
-	private boolean isLike;
-	private Integer noOfLikes;
+	private List<String> isLikeList;
 	private List<Comment> commentList;
+	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
 	public String getAvtar() {
 		return avtar;
 	}
@@ -42,17 +49,12 @@ public class Tweet {
 	public void setTime(LocalDateTime localDateTime) {
 		this.time = localDateTime;
 	}
-	public boolean isLike() {
-		return isLike;
+	
+	public List<String> getIsLikeList() {
+		return isLikeList;
 	}
-	public void setLike(boolean isLike) {
-		this.isLike = isLike;
-	}
-	public Integer getNoOfLikes() {
-		return noOfLikes;
-	}
-	public void setNoOfLikes(Integer noOfLikes) {
-		this.noOfLikes = noOfLikes;
+	public void setIsLikeList(List<String> isLikeList) {
+		this.isLikeList = isLikeList;
 	}
 	public List<Comment> getCommentList() {
 		return commentList;
@@ -61,6 +63,4 @@ public class Tweet {
 		this.commentList = commentList;
 	}
 	
-	
-
 }

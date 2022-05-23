@@ -75,5 +75,6 @@ public class UserServiceImpl implements UserService {
 		loginResponse.setRole(user.get().getRole());
 		return loginResponse;
 	}
+	
 
 }
