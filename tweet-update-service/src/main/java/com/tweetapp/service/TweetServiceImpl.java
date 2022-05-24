@@ -50,13 +50,21 @@ public class TweetServiceImpl implements TweetService {
 	
 	public void likeTweet(String loginId, String id) {
 		Optional<Tweet> tweet = tweetRepository.findById(id);
-		if(tweet.isEmpty()) {
+		if (tweet.isEmpty()) {
 			throw new ResourceNotFoundException("No Tweet with this id is present in Database");
 		}
-		List<String> isLikeList = tweet.get().getIsLikeList();
-		isLikeList.add(loginId);
-		tweet.get().setIsLikeList(isLikeList);
-		tweetRepository.save(tweet.get());
+		if (tweet.get().getIsLikeList() == null) {
+			List<String> isLikeList = new ArrayList<>();
+			isLikeList.add(loginId);
+			tweet.get().setIsLikeList(isLikeList);
+			tweetRepository.save(tweet.get());
+		} else {
+			List<String> isLikeList = tweet.get().getIsLikeList();
+			isLikeList.add(loginId);
+			tweet.get().setIsLikeList(isLikeList);
+			tweetRepository.save(tweet.get());
+		}
+
 	}
 	
 	public void dislikeTweet(String loginId, String id) {
@@ -75,10 +83,17 @@ public class TweetServiceImpl implements TweetService {
 		if(tweet.isEmpty()) {
 			throw new ResourceNotFoundException("No Tweet with this id is present in Database");
 		}
-		List<Comment> commentList=tweet.get().getCommentList();
-		commentList.add(comment);
-		tweet.get().setCommentList(commentList);
-		tweetRepository.save(tweet.get());
+		if (tweet.get().getCommentList() == null) {
+			List<Comment> commentList = new ArrayList<>();
+			commentList.add(comment);
+			tweet.get().setCommentList(commentList);
+			tweetRepository.save(tweet.get());
+		} else {
+			List<Comment> commentList = tweet.get().getCommentList();
+			commentList.add(comment);
+			tweet.get().setCommentList(commentList);
+			tweetRepository.save(tweet.get());
+		}
 	}
 	
 }

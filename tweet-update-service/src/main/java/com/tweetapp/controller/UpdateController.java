@@ -16,11 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tweetapp.model.Comment;
 import com.tweetapp.model.LoginResponse;
+import com.tweetapp.model.Tag;
 import com.tweetapp.model.Tweet;
+import com.tweetapp.model.UpdatePasswordRequest;
 import com.tweetapp.model.User;
 import com.tweetapp.model.UserResponse;
 import com.tweetapp.service.TweetServiceImpl;
 import com.tweetapp.service.UserServiceImpl;
+import com.tweetapp.model.ForgotPasswordRequest;
 
 @RestController
 public class UpdateController{
@@ -38,23 +41,34 @@ public class UpdateController{
 		return new ResponseEntity<>(res,HttpStatus.OK);
 	}
 	
-	@GetMapping("/allusers")
+	@GetMapping("/all-users")
 	public List<UserResponse> allUsers() {
 		return userService.getAllUsers();
 	}
 	
-	@GetMapping("/user/{loginId}")
-	public UserResponse singleUser(@PathVariable String loginId) {
-		System.out.println("loginId");
-		return userService.getUser(loginId);
+	@GetMapping("{loginId}/search-user")
+	public List<UserResponse> findUser(@PathVariable String loginId){
+		return userService.searchUsers(loginId);
 	}
 	
-//	@GetMapping("{loginId}/forgot")
-//	public LoginResponse forgotPassword(@PathVariable String loginId){
-//		
+//	@GetMapping("/{loginId}/user")
+//	public UserResponse singleUser(@PathVariable String loginId) {
+//		System.out.println("loginId");
+//		return userService.getUser(loginId);
 //	}
 	
-	@GetMapping("login/{loginId}")
+	@GetMapping("/{loginId}/forgot")
+	public Boolean forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest, @PathVariable String loginId){
+		return userService.forgotPassword(forgotPasswordRequest, loginId);
+	}
+	
+	@PutMapping("/update-Password")
+	public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordRequest updatePasswordRequest){
+		userService.updatePassword(updatePasswordRequest);
+		return new ResponseEntity<>("Successfully changed password for loginId "+updatePasswordRequest.getLoginId(), HttpStatus.OK);
+	}
+	
+	@GetMapping("{loginId}/login")
 	public LoginResponse login(@PathVariable String loginId){
 		return userService.login(loginId);
 	}
@@ -64,24 +78,24 @@ public class UpdateController{
 		return tweetService.getAllTweets();
 	}
 	
-	@GetMapping("tweets/{loginId}")
+	@GetMapping("{loginId}/tweets")
 	public List<Tweet> tweets(@PathVariable String loginId){
 		return tweetService.getTweetByUsername(loginId);	
 	}
 	
-	@PostMapping("add")
+	@PostMapping("add-tweet")
 	public ResponseEntity<String> addTweet(@RequestBody Tweet tweet){
 		tweetService.postTweet(tweet);
-		return new ResponseEntity<>("Successfully tweet added for loginId "+tweet.getLoginId(),HttpStatus.OK);
+		return new ResponseEntity<>("Successfully tweet added for loginId "+tweet.getId(),HttpStatus.OK);
 	}
 	
-	@PutMapping("{loginId}/update/{id}")
+	@PutMapping("{loginId}/update-tweet/{id}")
 	public ResponseEntity<String> updateTweet(@RequestBody String updatedTweet, @PathVariable String loginId ,@PathVariable String id){
 		tweetService.updateTweet(loginId, id, updatedTweet);
 		return new ResponseEntity<>("Successfully updated Tweet ",HttpStatus.OK);
 	}
 	
-	@DeleteMapping("{loginId}/delete/{id}")
+	@DeleteMapping("{loginId}/delete-tweet/{id}")
 	public ResponseEntity<String> deleteTweet(@PathVariable String loginId ,@PathVariable String id){
 		tweetService.deleteTweet(loginId, id);
 		return new ResponseEntity<>("Successfully deleted Tweet ",HttpStatus.OK);
@@ -103,6 +117,17 @@ public class UpdateController{
 	public ResponseEntity<String> replyTweet(@RequestBody Comment comment,@PathVariable String id){
 		tweetService.replyTweet(comment,id);
 		return new ResponseEntity<>("Successfully added reply to tweet ",HttpStatus.OK);
+	}
+	
+	@GetMapping("{loginId}/tagged-tweets")
+	public Tag taggedTweets(@PathVariable String loginId) {
+		return userService.taggedTweets(loginId);
+	}
+	
+	@PutMapping("{loginId}/tag/{tweetId}")
+	public ResponseEntity<String> tagUser(@PathVariable String loginId, @PathVariable String tweetId) {
+		userService.tagUser(loginId,tweetId);
+		return new ResponseEntity<>("Successfully tagged user "+loginId,HttpStatus.OK);
 	}
 	
 }
