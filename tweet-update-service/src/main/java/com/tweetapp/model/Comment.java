@@ -1,12 +1,13 @@
 package com.tweetapp.model;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class Comment {
 	
 	private String commentMessage;
 	private String commentor;
-	private Date time;
+	private LocalDateTime time;
 	public String getCommentMessage() {
 		return commentMessage;
 	}
@@ -19,11 +20,11 @@ public class Comment {
 	public void setCommentor(String commentor) {
 		this.commentor = commentor;
 	}
-	public Date getTime() {
+	public LocalDateTime getTime() {
 		return time;
 	}
-	public void setTime(Date time) {
-		this.time = time;
+	public void setTime(LocalDateTime localDateTime) {
+		this.time = localDateTime;
 	}
 	
 	
