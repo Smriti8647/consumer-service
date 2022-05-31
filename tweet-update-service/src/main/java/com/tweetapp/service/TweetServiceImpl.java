@@ -62,6 +62,7 @@ public class TweetServiceImpl implements TweetService {
 	@Override
 	public void updateTweet(String loginId, String id, String updatedTweet) {
 		//TODO WE DONT NEED LOGINID, ID ALONE IS ENOUGH
+		// todo to create exception
 		Tweet tweet = tweetRepository.findByLoginIdAndId(loginId, id);
 		tweet.setMessage(updatedTweet);
 		tweetRepository.save(tweet);

@@ -40,22 +40,26 @@ public class UpdateController {
 
 	@PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> registerUser(@RequestBody User user) {
-		if(LOGGER.isDebugEnabled()) {
-			LOGGER.debug("User Request: {}",user);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("User Request: {}", user);
 		}
 		String res = userService.saveUser(user);
-//		return new ResponseEntity<>("Succesfully registerd the user with loginId"+user.getLoginId(),HttpStatus.OK);
-		return new ResponseEntity<>(res, HttpStatus.OK);
+		if (res.startsWith("Successful with id")) {
+			return new ResponseEntity<>(res, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(res, HttpStatus.CONFLICT);
+		}
 	}
 
+	// ResourceNotFoundException
 	@GetMapping("/all-users")
-	public List<UserResponse> allUsers() {
-		return userService.getAllUsers();
+	public ResponseEntity<List<UserResponse>> allUsers() {
+		return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
 	}
 
 	@GetMapping("{loginId}/search-user")
-	public List<UserResponse> findUser(@PathVariable String loginId) {
-		return userService.searchUsers(loginId);
+	public ResponseEntity<List<UserResponse>> findUser(@PathVariable String loginId) {
+		return new ResponseEntity<>(userService.searchUsers(loginId), HttpStatus.OK);
 	}
 
 //	@GetMapping("/{loginId}/user")
@@ -64,12 +68,15 @@ public class UpdateController {
 //		return userService.getUser(loginId);
 //	}
 
+	
+	// ResourceNotFoundException
 	@GetMapping("/{loginId}/forgot")
-	public Boolean forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest,
+	public ResponseEntity<Boolean> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest,
 			@PathVariable String loginId) {
-		return userService.forgotPassword(forgotPasswordRequest, loginId);
+		return new ResponseEntity<>(userService.forgotPassword(forgotPasswordRequest, loginId), HttpStatus.OK);
 	}
 
+	// ResourceNotFoundException
 	@PutMapping("/update-Password")
 	public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordRequest updatePasswordRequest) {
 		userService.updatePassword(updatePasswordRequest);
@@ -77,19 +84,22 @@ public class UpdateController {
 				HttpStatus.OK);
 	}
 
+	// ResourceNotFoundException
 	@GetMapping("{loginId}/login")
-	public LoginResponse login(@PathVariable String loginId) {
-		return userService.login(loginId);
+	public ResponseEntity<LoginResponse> login(@PathVariable String loginId) {
+		return new ResponseEntity<>(userService.login(loginId), HttpStatus.OK);
 	}
 
+	// ResourceNotFoundException
 	@GetMapping("tweets")
-	public List<Tweet> tweets() {
-		return tweetService.getAllTweets();
+	public ResponseEntity<List<Tweet>> tweets() {
+		return new ResponseEntity<>(tweetService.getAllTweets(), HttpStatus.OK);
 	}
 
+	// ResourceNotFoundException
 	@GetMapping("{loginId}/tweets")
-	public List<Tweet> tweets(@PathVariable String loginId) {
-		return tweetService.getTweetByUsername(loginId);
+	public ResponseEntity<List<Tweet>> tweets(@PathVariable String loginId) {
+		return new ResponseEntity<>(tweetService.getTweetByUsername(loginId), HttpStatus.OK);
 	}
 
 	@PostMapping("add-tweet")
@@ -98,6 +108,7 @@ public class UpdateController {
 		return new ResponseEntity<>("Successfully tweet added for loginId " + tweet.getId(), HttpStatus.CREATED);
 	}
 
+	// ResourceNotFoundException
 	@PutMapping("{loginId}/update-tweet/{id}")
 	public ResponseEntity<String> updateTweet(@RequestBody String updatedTweet, @PathVariable String loginId,
 			@PathVariable String id) {
@@ -111,18 +122,21 @@ public class UpdateController {
 		return new ResponseEntity<>("Successfully deleted Tweet ", HttpStatus.OK);
 	}
 
+	// ResourceNotFoundException
 	@PutMapping("{loginId}/like/{id}")
 	public ResponseEntity<String> likeTweet(@PathVariable String loginId, @PathVariable String id) {
 		tweetService.likeTweet(loginId, id);
 		return new ResponseEntity<>("Tweet liked by " + loginId, HttpStatus.OK);
 	}
 
+	// ResourceNotFoundException
 	@PutMapping("{loginId}/dislike/{id}")
 	public ResponseEntity<String> dislikeTweet(@PathVariable String loginId, @PathVariable String id) {
 		tweetService.dislikeTweet(loginId, id);
 		return new ResponseEntity<>("Tweet disliked by " + loginId, HttpStatus.OK);
 	}
 
+	// ResourceNotFoundException
 	@PostMapping("reply/{id}")
 	public ResponseEntity<String> replyTweet(@RequestBody Comment comment, @PathVariable String id) {
 		tweetService.replyTweet(comment, id);
@@ -130,8 +144,8 @@ public class UpdateController {
 	}
 
 	@GetMapping("{loginId}/tagged-tweets")
-	public Tag taggedTweets(@PathVariable String loginId) {
-		return userService.taggedTweets(loginId);
+	public  ResponseEntity<Tag> taggedTweets(@PathVariable String loginId) {
+		return new ResponseEntity<>(userService.taggedTweets(loginId), HttpStatus.OK);
 	}
 
 	@PutMapping("{loginId}/tag/{tweetId}")

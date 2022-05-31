@@ -22,17 +22,17 @@ import com.tweetapp.repository.UserRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
-	
+
 	public static final Logger LOGGER = LoggerFactory.getLogger(UpdateController.class);
 	private final UserRepository userRepository;
-	
+
 //	@Autowired
 //	UserRepository userRepository;
 	@Autowired
 	public UserServiceImpl(UserRepository userRepository) {
-		this.userRepository=userRepository;
+		this.userRepository = userRepository;
 	}
-	
+
 	@Autowired
 	TagRepository tagRepository;
 
@@ -41,13 +41,13 @@ public class UserServiceImpl implements UserService {
 		Boolean isUserWithEmailPresent = userRepository.findUserByEmail(user.getEmail()).isPresent();
 		Boolean isUserWithIdPresent = userRepository.findById(user.getLoginId()).isPresent();
 		if (isUserWithIdPresent) {
-			return "this login id is already registered";
+			return "This login id is already registered";
 		} else if (isUserWithEmailPresent) {
-			return "this email id is already registered";
+			return "This email id is already registered";
 		} else {
 			user.setRole("ROLE_USER");
 			userRepository.save(user);
-			return "successful with id " + user.getLoginId();
+			return "Successful with id " + user.getLoginId();
 		}
 	}
 
@@ -60,90 +60,96 @@ public class UserServiceImpl implements UserService {
 //	}
 
 	private UserResponse populateUserResponse(User user) {
-		UserResponse userResponse=new UserResponse();
+		UserResponse userResponse = new UserResponse();
 		userResponse.setAvtar(user.getAvtar());
 		userResponse.setLoginId(user.getLoginId());
 		userResponse.setName(user.getFirstName());
 		return userResponse;
 	}
-	
+
 	@Override
 	public List<UserResponse> getAllUsers() {
 		List<User> userList = userRepository.findAll();
 		if (userList.isEmpty()) {
-			if(LOGGER.isDebugEnabled()) {
-				LOGGER.debug("{}, Information: Throwing ResourceNotFoundException with message 'No user Present in Database' ",this.getClass().getSimpleName());
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(
+						"{}, Information: Throwing ResourceNotFoundException with message 'No user Present in Database' ",
+						this.getClass().getSimpleName());
 			}
 			throw new ResourceNotFoundException("No user Present in Database");
-		}	
-		if(LOGGER.isDebugEnabled()) {
-			LOGGER.debug("{}, Information: Fetching Users ",this.getClass().getSimpleName());
 		}
-		List<UserResponse> userResponseList=new ArrayList<>();
-		userList.forEach(user->{
-			UserResponse userResposne=new UserResponse();
-			userResposne=populateUserResponse(user);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("{}, Information: Fetching Users ", this.getClass().getSimpleName());
+		}
+		List<UserResponse> userResponseList = new ArrayList<>();
+		userList.forEach(user -> {
+			UserResponse userResposne = new UserResponse();
+			userResposne = populateUserResponse(user);
 			userResponseList.add(userResposne);
 		});
-		//userResposne=populateUserResponse()
+		// userResposne=populateUserResponse()
 		return userResponseList;
 	}
-	
+
 	@Override
 	public LoginResponse login(String loginId) {
-		LoginResponse loginResponse= new LoginResponse();
+		LoginResponse loginResponse = new LoginResponse();
 		Optional<User> user = userRepository.findById(loginId);
 		if (!user.isPresent()) {
-			if(LOGGER.isDebugEnabled()) {
-				LOGGER.debug("{}, Information: Throwing ResourceNotFoundException with message 'User not present in Database' ",this.getClass().getSimpleName());
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(
+						"{}, Information: Throwing ResourceNotFoundException with message 'User not present in Database' ",
+						this.getClass().getSimpleName());
 			}
 			throw new ResourceNotFoundException("User not present in Database");
 		}
-		if(LOGGER.isDebugEnabled()) {
-			LOGGER.debug("{}, Information: Fetching User ",this.getClass().getSimpleName());
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("{}, Information: Fetching User ", this.getClass().getSimpleName());
 		}
-		populateLoginResponse(loginResponse,user.get());		
+		populateLoginResponse(loginResponse, user.get());
 		return loginResponse;
 	}
-	
+
 	private void populateLoginResponse(LoginResponse loginResponse, User user) {
 		loginResponse.setLoginId(user.getLoginId());
 		loginResponse.setPassword(user.getPassword());
 		loginResponse.setRole(user.getRole());
 	}
 
-	
 	@Override
 	public boolean forgotPassword(ForgotPasswordRequest request, String loginId) {
-		Optional<User> user =  userRepository.findById(loginId);
+		Optional<User> user = userRepository.findById(loginId);
 		if (!user.isPresent()) {
-			if(LOGGER.isDebugEnabled()) {
-				LOGGER.debug("{}, Information: Throwing ResourceNotFoundException with message 'User not present in Database' ",this.getClass().getSimpleName());
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(
+						"{}, Information: Throwing ResourceNotFoundException with message 'User not present in Database' ",
+						this.getClass().getSimpleName());
 			}
 			throw new ResourceNotFoundException("User not present in Database");
 		}
-		if(LOGGER.isDebugEnabled()) {
-			LOGGER.debug("{}, Information: Fetching User Details ",this.getClass().getSimpleName());
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("{}, Information: Fetching User Details ", this.getClass().getSimpleName());
 		}
-		if(user.get().getQuestion()==request.getQues() && user.get().getAns()==request.getAns()) {
+		if (user.get().getQuestion() == request.getQues() && user.get().getAns() == request.getAns()) {
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public void updatePassword(UpdatePasswordRequest updatePasswordRequest) {
-		Optional<User> user =  userRepository.findById(updatePasswordRequest.getLoginId());
+		Optional<User> user = userRepository.findById(updatePasswordRequest.getLoginId());
 		if (!user.isPresent()) {
-			if(LOGGER.isDebugEnabled()) {
-				LOGGER.debug("{}, Information: Throwing ResourceNotFoundException with message 'User not present in Database' ",this.getClass().getSimpleName());
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(
+						"{}, Information: Throwing ResourceNotFoundException with message 'User not present in Database' ",
+						this.getClass().getSimpleName());
 			}
 			throw new ResourceNotFoundException("User not present in Database");
 		}
-		if(LOGGER.isDebugEnabled()) {
-			LOGGER.debug("{}, Information: Updating Password ",this.getClass().getSimpleName());
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("{}, Information: Updating Password ", this.getClass().getSimpleName());
 		}
 		user.get().setPassword(updatePasswordRequest.getNewPassword());
 		userRepository.save(user.get());
@@ -151,28 +157,23 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<UserResponse> searchUsers(String loginId) {
-		List<User> userList =  userRepository.findUsersByPartialId(loginId);
-		//TODO- to decide whether we want to throw an exception or send an empty list,
-		// current implementation is sending empty list
-//		if(userList.isEmpty()) {
-//			throw new ResourceNotFoundException("User not present in Database");
-//		}
-		if(LOGGER.isDebugEnabled()) {
-			LOGGER.debug("{}, Information: Fetching Users ",this.getClass().getSimpleName());
+		List<User> userList = userRepository.findUsersByPartialId(loginId);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("{}, Information: Fetching Users ", this.getClass().getSimpleName());
 		}
-		List<UserResponse> userResponseList=new ArrayList<>();
-		userList.forEach(user->{
-			UserResponse userResposne=new UserResponse();
-			userResposne=populateUserResponse(user);
+		List<UserResponse> userResponseList = new ArrayList<>();
+		userList.forEach(user -> {
+			UserResponse userResposne = new UserResponse();
+			userResposne = populateUserResponse(user);
 			userResponseList.add(userResposne);
 		});
 		return userResponseList;
 	}
-	
+
 	@Override
 	public Tag taggedTweets(String loginId) {
-		Optional<Tag> tag=tagRepository.findById(loginId);
-		//TODO to decide what to do
+		Optional<Tag> tag = tagRepository.findById(loginId);
+		// TODO to decide what to do
 //		if (!tag.isPresent()) {
 //			if(LOGGER.isDebugEnabled()) {
 //				LOGGER.debug("{}, Information: Throwing ResourceNotFoundException with message 'User not present in Database' ",this.getClass().getSimpleName());
@@ -181,20 +182,19 @@ public class UserServiceImpl implements UserService {
 //		}
 		return tag.get();
 	}
-	
+
 	@Override
 	public void tagUser(String loginId, String tweetId) {
-		Optional<Tag> tag=tagRepository.findById(loginId);
-		if(tag.isEmpty()) {
-			Tag tagRecord=new Tag();
+		Optional<Tag> tag = tagRepository.findById(loginId);
+		if (tag.isEmpty()) {
+			Tag tagRecord = new Tag();
 			tagRecord.setLoginId(loginId);
-			List<String> tweetIdList=new ArrayList<>();
+			List<String> tweetIdList = new ArrayList<>();
 			tweetIdList.add(tweetId);
 			tagRecord.setTweetIdList(tweetIdList);
 			tagRepository.insert(tagRecord);
-		}
-		else {
-			List<String> tweetIdList=tag.get().getTweetIdList();
+		} else {
+			List<String> tweetIdList = tag.get().getTweetIdList();
 			tweetIdList.add(tweetId);
 			tag.get().setTweetIdList(tweetIdList);
 			tagRepository.save(tag.get());
