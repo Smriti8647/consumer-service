@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,12 +71,6 @@ public class TweetServiceTest {
 	}
 
 	@Test
-	public void testGetTweetByUsername_ThrowsException() {
-		when(tweetRepository.findAllByLoginId(anyString())).thenReturn(Collections.emptyList());
-		assertThrows(ResourceNotFoundException.class, () -> tweetService.getTweetByUsername(anyString()));
-	}
-
-	@Test
 	public void testGetAllTweets() throws ResourceNotFoundException {
 		setTweet();
 		List<Tweet> tweetList = new ArrayList<>();
@@ -88,15 +81,9 @@ public class TweetServiceTest {
 	}
 
 	@Test
-	public void testGetAllTweets_ThrowsException() {
-		when(tweetRepository.findAll()).thenReturn(Collections.emptyList());
-		assertThrows(ResourceNotFoundException.class, () -> tweetService.getAllTweets());
-	}
-
-	@Test
 	public void testUpdateTweet() {
-		when(tweetRepository.findByLoginIdAndId("sarah", "abc")).thenReturn(tweet);
-		tweetService.updateTweet("sarah", "abc", "heyyy");
+		when(tweetRepository.findById("abc")).thenReturn(Optional.of(tweet));
+		tweetService.updateTweet("abc", "heyyy");
 	}
 
 	@Test
@@ -126,19 +113,19 @@ public class TweetServiceTest {
 		when(tweetRepository.findById(anyString())).thenReturn(Optional.empty());
 		assertThrows(ResourceNotFoundException.class, () -> tweetService.dislikeTweet("sam", "abc"));
 	}
-	
+
 	@Test
 	public void testReplyTweet() throws ResourceNotFoundException {
 		setTweet();
 		when(tweetRepository.findById("abc")).thenReturn(Optional.of(tweet));
-		Comment comment=new Comment();
+		Comment comment = new Comment();
 		comment.setCommentMessage("heya");
 		comment.setCommentor("sam");
 		comment.setTime(LocalDateTime.now());
 		tweetService.replyTweet(comment, "abc");
 		assertEquals(2, tweet.getCommentList().size());
 	}
-	
+
 	@Test
 	public void testReplyTweet_ThrowsException() {
 		when(tweetRepository.findById(anyString())).thenReturn(Optional.empty());
