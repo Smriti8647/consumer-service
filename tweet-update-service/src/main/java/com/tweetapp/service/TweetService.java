@@ -13,7 +13,7 @@ public interface TweetService {
 
 	public void postTweet(Tweet tweet);
 
-	public void updateTweet(String loginId, String id, String updatedTweet);
+	public void updateTweet(String id, String updatedTweet);
 
 	public void deleteTweet(String loginId, String id);
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tweetapp.exceptions.ResourceNotFoundException;
 import com.tweetapp.model.Comment;
 import com.tweetapp.model.LoginResponse;
 import com.tweetapp.model.Tag;
@@ -45,16 +46,22 @@ public class UpdateController {
 		}
 		String res = userService.saveUser(user);
 		if (res.startsWith("Successful with id")) {
+			System.out.println("regsiterUser");
 			return new ResponseEntity<>(res, HttpStatus.CREATED);
 		} else {
+			System.out.println("regsiterUser");
 			return new ResponseEntity<>(res, HttpStatus.CONFLICT);
+
 		}
 	}
 
-	// ResourceNotFoundException
 	@GetMapping("/all-users")
 	public ResponseEntity<List<UserResponse>> allUsers() {
-		return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+		List<UserResponse> userResponseList = userService.getAllUsers();
+		HttpStatus status = HttpStatus.OK;
+		if (userResponseList.isEmpty())
+			status = HttpStatus.NOT_FOUND;
+		return new ResponseEntity<>(userResponseList, status);
 	}
 
 	@GetMapping("{loginId}/search-user")
@@ -68,38 +75,60 @@ public class UpdateController {
 //		return userService.getUser(loginId);
 //	}
 
-	
 	// ResourceNotFoundException
 	@GetMapping("/{loginId}/forgot")
 	public ResponseEntity<Boolean> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest,
 			@PathVariable String loginId) {
-		return new ResponseEntity<>(userService.forgotPassword(forgotPasswordRequest, loginId), HttpStatus.OK);
+		try {
+			Boolean result = userService.forgotPassword(forgotPasswordRequest, loginId);
+			return new ResponseEntity<>(result, HttpStatus.OK);
+		} catch (ResourceNotFoundException e) {
+			return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+
+		}
 	}
 
-	// ResourceNotFoundException
 	@PutMapping("/update-Password")
 	public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordRequest updatePasswordRequest) {
 		userService.updatePassword(updatePasswordRequest);
-		return new ResponseEntity<>("Successfully changed password for loginId " + updatePasswordRequest.getLoginId(),
-				HttpStatus.OK);
+		try {
+			userService.updatePassword(updatePasswordRequest);
+			return new ResponseEntity<>(
+					"Successfully changed password for loginId " + updatePasswordRequest.getLoginId(), HttpStatus.OK);
+		} catch (ResourceNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+
 	}
 
-	// ResourceNotFoundException
 	@GetMapping("{loginId}/login")
 	public ResponseEntity<LoginResponse> login(@PathVariable String loginId) {
-		return new ResponseEntity<>(userService.login(loginId), HttpStatus.OK);
+		LoginResponse loginResponse = new LoginResponse();
+		try {
+			loginResponse = userService.login(loginId);
+			return new ResponseEntity<>(loginResponse, HttpStatus.OK);
+		} catch (ResourceNotFoundException e) {
+			return new ResponseEntity<>(loginResponse, HttpStatus.NOT_FOUND);
+		}
+
 	}
 
-	// ResourceNotFoundException
 	@GetMapping("tweets")
-	public ResponseEntity<List<Tweet>> tweets() {
-		return new ResponseEntity<>(tweetService.getAllTweets(), HttpStatus.OK);
+	public ResponseEntity<List<Tweet>> allTweets() {
+		List<Tweet> tweetList = tweetService.getAllTweets();
+		HttpStatus status = HttpStatus.OK;
+		if (tweetList.isEmpty())
+			status = HttpStatus.NOT_FOUND;
+		return new ResponseEntity<>(tweetList, status);
 	}
 
-	// ResourceNotFoundException
 	@GetMapping("{loginId}/tweets")
-	public ResponseEntity<List<Tweet>> tweets(@PathVariable String loginId) {
-		return new ResponseEntity<>(tweetService.getTweetByUsername(loginId), HttpStatus.OK);
+	public ResponseEntity<List<Tweet>> userTweets(@PathVariable String loginId) {
+		List<Tweet> tweetList = tweetService.getTweetByUsername(loginId);
+		HttpStatus status = HttpStatus.OK;
+		if (tweetList.isEmpty())
+			status = HttpStatus.NOT_FOUND;
+		return new ResponseEntity<>(tweetList, status);
 	}
 
 	@PostMapping("add-tweet")
@@ -108,12 +137,14 @@ public class UpdateController {
 		return new ResponseEntity<>("Successfully tweet added for loginId " + tweet.getId(), HttpStatus.CREATED);
 	}
 
-	// ResourceNotFoundException
-	@PutMapping("{loginId}/update-tweet/{id}")
-	public ResponseEntity<String> updateTweet(@RequestBody String updatedTweet, @PathVariable String loginId,
-			@PathVariable String id) {
-		tweetService.updateTweet(loginId, id, updatedTweet);
-		return new ResponseEntity<>("Successfully updated Tweet ", HttpStatus.OK);
+	@PutMapping("/update-tweet/{id}")
+	public ResponseEntity<String> updateTweet(@RequestBody String updatedTweet, @PathVariable String id) {
+		try {
+			tweetService.updateTweet(id, updatedTweet);
+			return new ResponseEntity<>("Successfully updated Tweet ", HttpStatus.OK);
+		} catch (ResourceNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@DeleteMapping("{loginId}/delete-tweet/{id}")
@@ -122,29 +153,41 @@ public class UpdateController {
 		return new ResponseEntity<>("Successfully deleted Tweet ", HttpStatus.OK);
 	}
 
-	// ResourceNotFoundException
 	@PutMapping("{loginId}/like/{id}")
 	public ResponseEntity<String> likeTweet(@PathVariable String loginId, @PathVariable String id) {
-		tweetService.likeTweet(loginId, id);
-		return new ResponseEntity<>("Tweet liked by " + loginId, HttpStatus.OK);
+		try {
+			tweetService.likeTweet(loginId, id);
+			return new ResponseEntity<>("Tweet liked by " + loginId, HttpStatus.OK);
+		} catch (ResourceNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+
 	}
 
-	// ResourceNotFoundException
 	@PutMapping("{loginId}/dislike/{id}")
 	public ResponseEntity<String> dislikeTweet(@PathVariable String loginId, @PathVariable String id) {
-		tweetService.dislikeTweet(loginId, id);
-		return new ResponseEntity<>("Tweet disliked by " + loginId, HttpStatus.OK);
+		try {
+			tweetService.dislikeTweet(loginId, id);
+			return new ResponseEntity<>("Tweet disliked by " + loginId, HttpStatus.OK);
+		} catch (ResourceNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+
 	}
 
-	// ResourceNotFoundException
 	@PostMapping("reply/{id}")
 	public ResponseEntity<String> replyTweet(@RequestBody Comment comment, @PathVariable String id) {
-		tweetService.replyTweet(comment, id);
-		return new ResponseEntity<>("Successfully added reply to tweet ", HttpStatus.CREATED);
+		try {
+			tweetService.replyTweet(comment, id);
+			return new ResponseEntity<>("Successfully added reply to tweet ", HttpStatus.CREATED);
+		} catch (ResourceNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+
 	}
 
 	@GetMapping("{loginId}/tagged-tweets")
-	public  ResponseEntity<Tag> taggedTweets(@PathVariable String loginId) {
+	public ResponseEntity<Tag> taggedTweets(@PathVariable String loginId) {
 		return new ResponseEntity<>(userService.taggedTweets(loginId), HttpStatus.OK);
 	}
 

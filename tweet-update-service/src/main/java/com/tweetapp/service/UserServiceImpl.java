@@ -70,18 +70,14 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<UserResponse> getAllUsers() {
 		List<User> userList = userRepository.findAll();
+		List<UserResponse> userResponseList = new ArrayList<>();
 		if (userList.isEmpty()) {
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(
-						"{}, Information: Throwing ResourceNotFoundException with message 'No user Present in Database' ",
-						this.getClass().getSimpleName());
-			}
-			throw new ResourceNotFoundException("No user Present in Database");
+			return userResponseList;
 		}
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("{}, Information: Fetching Users ", this.getClass().getSimpleName());
 		}
-		List<UserResponse> userResponseList = new ArrayList<>();
+		
 		userList.forEach(user -> {
 			UserResponse userResposne = new UserResponse();
 			userResposne = populateUserResponse(user);
@@ -122,10 +118,9 @@ public class UserServiceImpl implements UserService {
 		if (!user.isPresent()) {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug(
-						"{}, Information: Throwing ResourceNotFoundException with message 'User not present in Database' ",
+						"{}, Information: 'User not present in Database' ",
 						this.getClass().getSimpleName());
 			}
-			throw new ResourceNotFoundException("User not present in Database");
 		}
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("{}, Information: Fetching User Details ", this.getClass().getSimpleName());

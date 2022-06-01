@@ -21,36 +21,23 @@ public class TweetServiceImpl implements TweetService {
 	public static final Logger LOGGER = LoggerFactory.getLogger(UpdateController.class);
 //	@Autowired
 //	TweetRepository tweetRepository;
-	
+
 	private final TweetRepository tweetRepository;
-	
+
 	@Autowired
 	public TweetServiceImpl(TweetRepository tweetRepository) {
-		this.tweetRepository=tweetRepository;
+		this.tweetRepository = tweetRepository;
 	}
-	
 
 	@Override
 	public List<Tweet> getAllTweets() {
 		List<Tweet> tweetList = tweetRepository.findAll();
-		if (tweetList.isEmpty()) {
-			if(LOGGER.isDebugEnabled()) {
-				LOGGER.debug("{}, Information: Throwing ResourceNotFoundException with message 'No Tweets are present in Database' ",this.getClass().getSimpleName());
-			}
-			throw new ResourceNotFoundException("No Tweets are present in Database");
-		}
 		return tweetList;
 	}
 
 	@Override
 	public List<Tweet> getTweetByUsername(String loginId) {
 		List<Tweet> tweetList = tweetRepository.findAllByLoginId(loginId);
-		if (tweetList.isEmpty()) {
-			if(LOGGER.isDebugEnabled()) {
-				LOGGER.debug("{}, Information: Throwing ResourceNotFoundException with message 'No Tweet for this user are present in Database' ",this.getClass().getSimpleName());
-			}
-			throw new ResourceNotFoundException("No Tweets for this user are present in Database");
-		}
 		return tweetList;
 	}
 
@@ -60,12 +47,18 @@ public class TweetServiceImpl implements TweetService {
 	}
 
 	@Override
-	public void updateTweet(String loginId, String id, String updatedTweet) {
-		//TODO WE DONT NEED LOGINID, ID ALONE IS ENOUGH
-		// todo to create exception
-		Tweet tweet = tweetRepository.findByLoginIdAndId(loginId, id);
-		tweet.setMessage(updatedTweet);
-		tweetRepository.save(tweet);
+	public void updateTweet(String id, String updatedTweet) {
+		Optional<Tweet> tweet = tweetRepository.findById(id);
+		if(tweet.isEmpty()) {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(
+						"{}, Information: Throwing ResourceNotFoundException with message 'No Tweet with this id is present in Database' ",
+						this.getClass().getSimpleName());
+			}
+			throw new ResourceNotFoundException("No Tweet with this id is present in Database");
+		}
+		tweet.get().setMessage(updatedTweet);
+		tweetRepository.save(tweet.get());
 	}
 
 	@Override
@@ -77,8 +70,10 @@ public class TweetServiceImpl implements TweetService {
 	public void likeTweet(String loginId, String id) {
 		Optional<Tweet> tweet = tweetRepository.findById(id);
 		if (tweet.isEmpty()) {
-			if(LOGGER.isDebugEnabled()) {
-				LOGGER.debug("{}, Information: Throwing ResourceNotFoundException with message 'No Tweet with this id is present in Database' ",this.getClass().getSimpleName());
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(
+						"{}, Information: Throwing ResourceNotFoundException with message 'No Tweet with this id is present in Database' ",
+						this.getClass().getSimpleName());
 			}
 			throw new ResourceNotFoundException("No Tweet with this id is present in Database");
 		}
@@ -101,8 +96,10 @@ public class TweetServiceImpl implements TweetService {
 	public void dislikeTweet(String loginId, String id) {
 		Optional<Tweet> tweet = tweetRepository.findById(id);
 		if (tweet.isEmpty()) {
-			if(LOGGER.isDebugEnabled()) {
-				LOGGER.debug("{}, Information: Throwing ResourceNotFoundException with message 'No Tweet with this id is present in Database' ",this.getClass().getSimpleName());
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(
+						"{}, Information: Throwing ResourceNotFoundException with message 'No Tweet with this id is present in Database' ",
+						this.getClass().getSimpleName());
 			}
 			throw new ResourceNotFoundException("No Tweet with this id is present in Database");
 		}
@@ -116,8 +113,10 @@ public class TweetServiceImpl implements TweetService {
 	public void replyTweet(Comment comment, String id) {
 		Optional<Tweet> tweet = tweetRepository.findById(id);
 		if (tweet.isEmpty()) {
-			if(LOGGER.isDebugEnabled()) {
-				LOGGER.debug("{}, Information: Throwing ResourceNotFoundException with message 'No Tweet with this id is present in Database' ",this.getClass().getSimpleName());
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(
+						"{}, Information: Throwing ResourceNotFoundException with message 'No Tweet with this id is present in Database' ",
+						this.getClass().getSimpleName());
 			}
 			throw new ResourceNotFoundException("No Tweet with this id is present in Database");
 		}
