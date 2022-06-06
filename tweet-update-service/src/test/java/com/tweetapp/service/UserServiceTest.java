@@ -86,12 +86,6 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testGetAllUsers_throwsException() {
-		when(userRepository.findAll()).thenReturn(Collections.emptyList());
-		assertThrows(ResourceNotFoundException.class, () -> userService.getAllUsers());
-	}
-
-	@Test
 	public void testSearchUser_UsersPresent() {
 		setUser();
 		List<User> userList = new ArrayList<>();
@@ -131,7 +125,7 @@ public class UserServiceTest {
 		setUser();
 		when(userRepository.findUserByEmail("qwerty@gmail.com")).thenReturn(Optional.of(user));
 		String msg = userService.saveUser(user);
-		assertEquals("this email id is already registered", msg);
+		assertEquals("This email id is already registered", msg);
 	}
 
 	@Test
@@ -139,13 +133,13 @@ public class UserServiceTest {
 		setUser();
 		when(userRepository.findById("sasha")).thenReturn(Optional.of(user));
 		String msg = userService.saveUser(user);
-		assertEquals("this login id is already registered", msg);
+		assertEquals("This login id is already registered", msg);
 	}
 
 	@Test
 	public void testSaveUser() {
 		setUser();
 		String msg = userService.saveUser(user);
-		assertEquals("successful with id " + user.getLoginId(), msg);
+		assertEquals("Successful with id " + user.getLoginId(), msg);
 	}
 }
