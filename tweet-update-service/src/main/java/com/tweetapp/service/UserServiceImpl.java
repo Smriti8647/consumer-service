@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import com.tweetapp.controller.UpdateController;
@@ -28,6 +30,10 @@ public class UserServiceImpl implements UserService {
 
 //	@Autowired
 //	UserRepository userRepository;
+	
+	//@Value("kafka-topic")
+	private static final String TOPIC="tweetTag";
+	
 	@Autowired
 	public UserServiceImpl(UserRepository userRepository) {
 		this.userRepository = userRepository;
@@ -178,21 +184,25 @@ public class UserServiceImpl implements UserService {
 		return tag.get();
 	}
 
+	/*
+	 * @Override public void tagUser(String loginId, String tweetId) { Optional<Tag>
+	 * tag = tagRepository.findById(loginId); if (tag.isEmpty()) { Tag tagRecord =
+	 * new Tag(); tagRecord.setLoginId(loginId); List<String> tweetIdList = new
+	 * ArrayList<>(); tweetIdList.add(tweetId);
+	 * tagRecord.setTweetIdList(tweetIdList); tagRepository.insert(tagRecord); }
+	 * else { List<String> tweetIdList = tag.get().getTweetIdList();
+	 * tweetIdList.add(tweetId); tag.get().setTweetIdList(tweetIdList);
+	 * tagRepository.save(tag.get()); } }
+	 */
+	
+	@KafkaListener(topics = TOPIC, groupId= "group_id", containerFactory = "userKafkaListenerFactory")
+	public void consumeJson(Tag tag) {
+		System.out.println(tag.toString());
+	}
+
 	@Override
 	public void tagUser(String loginId, String tweetId) {
-		Optional<Tag> tag = tagRepository.findById(loginId);
-		if (tag.isEmpty()) {
-			Tag tagRecord = new Tag();
-			tagRecord.setLoginId(loginId);
-			List<String> tweetIdList = new ArrayList<>();
-			tweetIdList.add(tweetId);
-			tagRecord.setTweetIdList(tweetIdList);
-			tagRepository.insert(tagRecord);
-		} else {
-			List<String> tweetIdList = tag.get().getTweetIdList();
-			tweetIdList.add(tweetId);
-			tag.get().setTweetIdList(tweetIdList);
-			tagRepository.save(tag.get());
-		}
+		// TODO Auto-generated method stub
+		
 	}
 }

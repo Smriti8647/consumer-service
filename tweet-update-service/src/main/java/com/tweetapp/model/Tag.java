@@ -5,26 +5,41 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document
+//@Document
 public class Tag {
-	@Id
-	private String loginId;
-	private List<String> tweetIdList;
+	//@Id
+	private String tweetId;
+	private List<String> users;
 
-	public String getLoginId() {
-		return loginId;
+	public Tag() {
+		super();
 	}
 
-	public void setLoginId(String loginId) {
-		this.loginId = loginId;
+	public Tag(String tweetId, List<String> users) {
+		super();
+		this.tweetId = tweetId;
+		this.users = users;
 	}
 
-	public List<String> getTweetIdList() {
-		return tweetIdList;
+	public String getTweetId() {
+		return tweetId;
 	}
 
-	public void setTweetIdList(List<String> tweetIdList) {
-		this.tweetIdList = tweetIdList;
+	public void setTweetId(String tweetId) {
+		this.tweetId = tweetId;
+	}
+
+	public List<String> getUsers() {
+		return users;
+	}
+
+	public void setUsers(List<String> users) {
+		this.users = users;
+	}
+
+	@Override
+	public String toString() {
+		return "Tag [tweetId=" + tweetId + ", users=" + users + "]";
 	}
 
 }
