@@ -15,7 +15,8 @@ import com.tweetapp.controller.UpdateController;
 import com.tweetapp.exceptions.ResourceNotFoundException;
 import com.tweetapp.model.ForgotPasswordRequest;
 import com.tweetapp.model.LoginResponse;
-import com.tweetapp.model.Tag;
+import com.tweetapp.model.TagDto;
+import com.tweetapp.model.TagRequest;
 import com.tweetapp.model.UpdatePasswordRequest;
 import com.tweetapp.model.User;
 import com.tweetapp.model.UserResponse;
@@ -172,32 +173,57 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Tag taggedTweets(String loginId) {
-		Optional<Tag> tag = tagRepository.findById(loginId);
-		// TODO to decide what to do
-//		if (!tag.isPresent()) {
-//			if(LOGGER.isDebugEnabled()) {
-//				LOGGER.debug("{}, Information: Throwing ResourceNotFoundException with message 'User not present in Database' ",this.getClass().getSimpleName());
-//			}
-//			throw new ResourceNotFoundException("User not present in Database");
-//		}
+	public TagDto taggedTweets(String loginId) {
+		Optional<TagDto> tag = tagRepository.findById(loginId);
+		if (!tag.isPresent()) {
+			if(LOGGER.isDebugEnabled()) {
+				LOGGER.debug("{}, Information: Throwing ResourceNotFoundException with message 'User not present in Database' ",this.getClass().getSimpleName());
+			}
+			throw new ResourceNotFoundException("User not present in Database");
+		}
 		return tag.get();
 	}
 
-	/*
-	 * @Override public void tagUser(String loginId, String tweetId) { Optional<Tag>
-	 * tag = tagRepository.findById(loginId); if (tag.isEmpty()) { Tag tagRecord =
-	 * new Tag(); tagRecord.setLoginId(loginId); List<String> tweetIdList = new
-	 * ArrayList<>(); tweetIdList.add(tweetId);
-	 * tagRecord.setTweetIdList(tweetIdList); tagRepository.insert(tagRecord); }
-	 * else { List<String> tweetIdList = tag.get().getTweetIdList();
-	 * tweetIdList.add(tweetId); tag.get().setTweetIdList(tweetIdList);
-	 * tagRepository.save(tag.get()); } }
-	 */
+	
+//	@Override
+//	public void tagUser(String loginId, String tweetId) {
+//		Optional<Tag> tag = tagRepository.findById(loginId);
+//		if (tag.isEmpty()) {
+//			Tag tagRecord = new Tag();
+//			tagRecord.setLoginId(loginId);
+//			List<String> tweetIdList = new ArrayList<>();
+//			tweetIdList.add(tweetId);
+//			tagRecord.setTweetIdList(tweetIdList);
+//			tagRepository.insert(tagRecord);
+//		} else {
+//			List<String> tweetIdList = tag.get().getTweetIdList();
+//			tweetIdList.add(tweetId);
+//			tag.get().setTweetIdList(tweetIdList);
+//			tagRepository.save(tag.get());
+//		}
+//	}  
+	 
 	
 	@KafkaListener(topics = TOPIC, groupId= "group_id", containerFactory = "userKafkaListenerFactory")
-	public void consumeJson(Tag tag) {
-		System.out.println(tag.toString());
+	public void consumeJson(TagRequest tag) {
+		List<String> userList=tag.getUsers();
+		for(String user:userList) {
+			Optional<TagDto> tagDto = tagRepository.findById(user);
+			if(!tagDto.isPresent()) {
+				TagDto tagRecord=new TagDto();
+				tagRecord.setUser(user);
+				List<String> tweetIdList=new ArrayList<>();
+				tweetIdList.add(tag.getTweetId());
+				tagRecord.setTweetId(tweetIdList);
+				tagRepository.insert(tagRecord);
+			}
+			else {
+				List<String> tweetIdList= tagDto.get().getTweetId();
+				tweetIdList.add(tag.getTweetId());
+				tagDto.get().setTweetId(tweetIdList);
+				tagRepository.save(tagDto.get());
+			}
+		}
 	}
 
 	@Override
@@ -205,4 +231,10 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		
 	}
+
+//	@Override
+//	public TagRequest taggedTweets(String loginId) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 }

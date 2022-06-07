@@ -2,20 +2,17 @@ package com.tweetapp.model;
 
 import java.util.List;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-//@Document
-public class Tag {
-	//@Id
+public class TagRequest {
+	
 	private String tweetId;
 	private List<String> users;
 
-	public Tag() {
+	public TagRequest() {
 		super();
 	}
 
-	public Tag(String tweetId, List<String> users) {
+	public TagRequest(String tweetId, List<String> users) {
 		super();
 		this.tweetId = tweetId;
 		this.users = users;

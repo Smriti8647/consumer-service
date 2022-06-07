@@ -4,7 +4,8 @@ import java.util.List;
 
 import com.tweetapp.model.ForgotPasswordRequest;
 import com.tweetapp.model.LoginResponse;
-import com.tweetapp.model.Tag;
+import com.tweetapp.model.TagDto;
+import com.tweetapp.model.TagRequest;
 import com.tweetapp.model.UpdatePasswordRequest;
 import com.tweetapp.model.User;
 import com.tweetapp.model.UserResponse;
@@ -23,7 +24,7 @@ public interface UserService {
 	
 	public List<UserResponse> searchUsers(String loginId);
 	
-	public Tag taggedTweets(String loginId);
+	public TagDto taggedTweets(String loginId);
 	
 	public void tagUser(String loginId, String tweetId);
 	

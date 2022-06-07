@@ -13,25 +13,25 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
-import com.tweetapp.model.Tag;
+import com.tweetapp.model.TagRequest;
 
 @EnableKafka
 @Configuration
 public class TagConsumerConfiService {
 
 	@Bean
-	public ConsumerFactory<String,Tag> userConsumerFactory(){
+	public ConsumerFactory<String,TagRequest> userConsumerFactory(){
 		Map<String,Object> config = new HashMap<>();
 		config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
 		config.put(ConsumerConfig.GROUP_ID_CONFIG, "group_id");
 		config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 		config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,JsonDeserializer.class);
-		return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), new JsonDeserializer<>(Tag.class));
+		return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), new JsonDeserializer<>(TagRequest.class));
 	}
 	
 	@Bean
-	public ConcurrentKafkaListenerContainerFactory<String, Tag> userKafkaListenerFactory(){
-		ConcurrentKafkaListenerContainerFactory<String, Tag> factory = new ConcurrentKafkaListenerContainerFactory<>();
+	public ConcurrentKafkaListenerContainerFactory<String, TagRequest> userKafkaListenerFactory(){
+		ConcurrentKafkaListenerContainerFactory<String, TagRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(userConsumerFactory());
 		System.out.println("satyam");
 		return factory;

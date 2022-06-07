@@ -19,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tweetapp.exceptions.ResourceNotFoundException;
 import com.tweetapp.model.Comment;
 import com.tweetapp.model.LoginResponse;
-import com.tweetapp.model.Tag;
+import com.tweetapp.model.TagDto;
+import com.tweetapp.model.TagRequest;
 import com.tweetapp.model.Tweet;
 import com.tweetapp.model.UpdatePasswordRequest;
 import com.tweetapp.model.User;
@@ -187,14 +188,20 @@ public class UpdateController {
 	}
 
 	@GetMapping("{loginId}/tagged-tweets")
-	public ResponseEntity<Tag> taggedTweets(@PathVariable String loginId) {
-		return new ResponseEntity<>(userService.taggedTweets(loginId), HttpStatus.OK);
+	public ResponseEntity<TagDto> taggedTweets(@PathVariable String loginId) {
+		TagDto tag = new TagDto();
+		try {
+			tag = userService.taggedTweets(loginId);
+			return new ResponseEntity<>(tag, HttpStatus.OK);
+		} catch (ResourceNotFoundException e) {
+			return new ResponseEntity<>(tag, HttpStatus.NOT_FOUND);
+		}
 	}
 
-	@PutMapping("{loginId}/tag/{tweetId}")
-	public ResponseEntity<String> tagUser(@PathVariable String loginId, @PathVariable String tweetId) {
-		userService.tagUser(loginId, tweetId);
-		return new ResponseEntity<>("Successfully tagged user " + loginId, HttpStatus.CREATED);
-	}
+//	@PutMapping("{loginId}/tag/{tweetId}")
+//	public ResponseEntity<String> tagUser(@PathVariable String loginId, @PathVariable String tweetId) {
+//		userService.tagUser(loginId, tweetId);
+//		return new ResponseEntity<>("Successfully tagged user " + loginId, HttpStatus.CREATED);
+//	}
 
 }
