@@ -32,8 +32,7 @@ import com.tweetapp.repository.TagRepository;
 import com.tweetapp.repository.UserRepository;
 
 @SpringBootTest
-@ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+ class UserServiceTest {
 
 	@InjectMocks
 	public UserServiceImpl userService;
@@ -67,7 +66,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testLogin() throws ResourceNotFoundException {
+	 void testLogin() throws ResourceNotFoundException {
 		setUser();
 		when(userRepository.findById("sasha")).thenReturn(Optional.of(user));
 		LoginResponse loginResponse1 = userService.login(user.getLoginId());
@@ -75,13 +74,13 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testLogin_throwsException() {
+	 void testLogin_throwsException() {
 		when(userRepository.findById(anyString())).thenReturn(Optional.empty());
 		assertThrows(ResourceNotFoundException.class, () -> userService.login(user.getLoginId()));
 	}
 
 	@Test
-	public void testGetAllUsers() throws ResourceNotFoundException {
+	 void testGetAllUsers() throws ResourceNotFoundException {
 		setUser();
 		List<User> userList = new ArrayList<>();
 		userList.add(user);
@@ -91,7 +90,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testSearchUser_UsersPresent() {
+	 void testSearchUser_UsersPresent() {
 		setUser();
 		List<User> userList = new ArrayList<>();
 		userList.add(user);
@@ -101,14 +100,14 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testSearchUser_NoUserPresent() {
+	 void testSearchUser_NoUserPresent() {
 		when(userRepository.findUsersByPartialId(anyString())).thenReturn(Collections.emptyList());
 		List<UserResponse> userResponseList = userService.searchUsers("sas");
 		assertTrue(userResponseList.isEmpty());
 	}
 	
 	@Test
-	public void forgotPassword_SuccessfullyUpdated() throws ResourceNotFoundException {
+	 void forgotPassword_SuccessfullyUpdated() throws ResourceNotFoundException {
 		setUser();
 		when(userRepository.findById("sasha")).thenReturn(Optional.of(user));
 		ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
@@ -120,7 +119,7 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void forgotPassword_returnFalse() throws ResourceNotFoundException {
+	 void forgotPassword_returnFalse() throws ResourceNotFoundException {
 		setUser();
 		when(userRepository.findById("sasha")).thenReturn(Optional.of(user));
 		ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
@@ -132,14 +131,14 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void forgotPassword_throwsException() {
+	 void forgotPassword_throwsException() {
 		when(userRepository.findById(anyString())).thenReturn(Optional.empty());
 		ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
 		assertThrows(ResourceNotFoundException.class, () -> userService.forgotPassword(forgotPasswordRequest, "sasha"));
 	}
 
 	@Test
-	public void testSaveUser_EmailAlreadyPresent() {
+	 void testSaveUser_EmailAlreadyPresent() {
 		setUser();
 		when(userRepository.findUserByEmail("qwerty@gmail.com")).thenReturn(Optional.of(user));
 		String msg = userService.saveUser(user);
@@ -147,7 +146,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testSaveUser_loginIdAlreadyPresent() {
+	 void testSaveUser_loginIdAlreadyPresent() {
 		setUser();
 		when(userRepository.findById("sasha")).thenReturn(Optional.of(user));
 		String msg = userService.saveUser(user);
@@ -155,19 +154,19 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testSaveUser() {
+	 void testSaveUser() {
 		setUser();
 		String msg = userService.saveUser(user);
 		assertEquals("Successful with id " + user.getLoginId(), msg);
 	}
 	
 	@Test
-	public void taggedTweets_throwsException() {
+	 void taggedTweets_throwsException() {
 		when( tagRepository.findById("sasha")).thenReturn(Optional.empty());
 		assertThrows(ResourceNotFoundException.class, () -> userService.taggedTweets("sasha"));
 	}
 	@Test
-	public void taggedTweets() {
+	 void taggedTweets() {
 		TagDto tag=new TagDto();
 		tag.setUser("sasha");
 		List<String> tweetList=new ArrayList<>();

@@ -32,9 +32,7 @@ import com.tweetapp.service.TweetService;
 import com.tweetapp.service.UserService;
 
 @SpringBootTest
-@WebAppConfiguration
-@ExtendWith(MockitoExtension.class)
-public class UpdateControllerTest {
+class UpdateControllerTest {
 
 	@InjectMocks
 	UpdateController updateController;
@@ -57,48 +55,48 @@ public class UpdateControllerTest {
 	}
 
 	@Test
-	public void testGetAllUsers_NotFound() throws Exception {
+	 void testGetAllUsers_NotFound() throws Exception {
 		List<UserResponse> userResponseList = new ArrayList<>();
 		when(userService.getAllUsers()).thenReturn(userResponseList);
 		mockMvc.perform(get("/all-users")).andExpect(status().isNotFound());
 	}
 
 	@Test
-	public void testSearchUser() throws Exception {
+	 void testSearchUser() throws Exception {
 		mockMvc.perform(get("/smriti/search-user")).andExpect(status().isOk());
 	}
 
 	@Test
-	public void testForgotPassword() throws Exception {
+	 void testForgotPassword() throws Exception {
 		ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
 		forgotPasswordRequest.setQues("primary school");
 		forgotPasswordRequest.setAns("dsps");
-		when(userService.forgotPassword(forgotPasswordRequest, "sasha")).thenReturn(true);
-		ResponseEntity<Boolean> object = updateController.forgotPassword(forgotPasswordRequest, "sasha");
+		when(userService.forgotPassword(forgotPasswordRequest, "sasha")).thenReturn("");
+		ResponseEntity<String> object = updateController.forgotPassword(forgotPasswordRequest, "sasha");
 		assertNotNull(object);
 	}
 
 	@Test
-	public void testLogin() throws Exception {
+	 void testLogin() throws Exception {
 		mockMvc.perform(get("/sasha/login")).andExpect(status().isOk());
 	}
 
 	@Test
-	public void testGetAllTweets() throws Exception {
+	 void testGetAllTweets() throws Exception {
 		List<Tweet> tweetList = new ArrayList<>();
 		when(tweetService.getAllTweets()).thenReturn(tweetList);
 		mockMvc.perform(get("/tweets")).andExpect(status().isNotFound());
 	}
 
 	@Test
-	public void testGetUserTweets_NotFound() throws Exception {
+	 void testGetUserTweets_NotFound() throws Exception {
 		List<Tweet> tweetList = new ArrayList<>();
 		when(tweetService.getTweetByUsername("sasha")).thenReturn(tweetList);
 		mockMvc.perform(get("/sasha/tweets")).andExpect(status().isNotFound());
 	}
 
 	@Test
-	public void testRegisterUser() throws Exception {
+	 void testRegisterUser() throws Exception {
 		User user = new User();
 		user.setLoginId("sasha");
 		user.setFirstName("Sasha");
@@ -115,7 +113,7 @@ public class UpdateControllerTest {
 	}
 
 	@Test
-	public void testAddTweet() throws Exception {
+	 void testAddTweet() throws Exception {
 		Tweet tweet = new Tweet();
 		tweet.setId("abc");
 		tweet.setLoginId("sasha");
@@ -138,31 +136,31 @@ public class UpdateControllerTest {
 	}
 
 	@Test
-	public void testUpdateTweet() throws Exception {
+	 void testUpdateTweet() throws Exception {
 		ResponseEntity<String> object = updateController.updateTweet("hey", "abc");
 		assertNotNull(object);
 	}
 
 	@Test
-	public void testDeleteTweet() throws Exception {
+	 void testDeleteTweet() throws Exception {
 		ResponseEntity<String> object = updateController.deleteTweet("sasha", "abc");
 		assertNotNull(object);
 	}
 
 	@Test
-	public void testLikeTweet() throws Exception {
+	 void testLikeTweet() throws Exception {
 		ResponseEntity<String> object = updateController.likeTweet("sasha", "abc");
 		assertNotNull(object);
 	}
 
 	@Test
-	public void testDislikeTweet() throws Exception {
+	 void testDislikeTweet() throws Exception {
 		ResponseEntity<String> object = updateController.dislikeTweet("sasha", "abc");
 		assertNotNull(object);
 	}
 
 	@Test
-	public void tesReplyTweet() throws Exception {
+	 void tesReplyTweet() throws Exception {
 		Comment comment = new Comment();
 		comment.setCommentMessage("heya");
 		comment.setCommentor("sasha");

@@ -83,11 +83,6 @@ public class UpdateController {
 		return new ResponseEntity<>(userService.searchUsers(loginId), HttpStatus.OK);
 	}
 
-//	@GetMapping("/{loginId}/user")
-//	public UserResponse singleUser(@PathVariable String loginId) {
-//		System.out.println("loginId");
-//		return userService.getUser(loginId);
-//	}
 
 	@GetMapping("/{loginId}/forgot")
 	public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest,
@@ -96,26 +91,10 @@ public class UpdateController {
 			String result = userService.forgotPassword(forgotPasswordRequest, loginId);
 			return new ResponseEntity<>(result, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
-			return new ResponseEntity<>("", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>("User not Found", HttpStatus.NOT_FOUND);
 
 		}
 	}
-
-//	@PutMapping("/update-Password")
-//	public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordRequest updatePasswordRequest) {
-//		userService.updatePassword(updatePasswordRequest);
-//		try {
-//			userService.updatePassword(updatePasswordRequest);
-//			if (LOGGER.isDebugEnabled()) {
-//				LOGGER.debug("Succesfully updated Password for {}",updatePasswordRequest.getLoginId());
-//			}
-//			return new ResponseEntity<>(
-//					"Successfully changed password for loginId " + updatePasswordRequest.getLoginId(), HttpStatus.OK);
-//		} catch (ResourceNotFoundException e) {
-//			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-//		}
-//
-//	}
 
 	@GetMapping("{loginId}/login")
 	public ResponseEntity<LoginResponse> login(@PathVariable String loginId) {
@@ -251,11 +230,5 @@ public class UpdateController {
 			return new ResponseEntity<>(tag, HttpStatus.NOT_FOUND);
 		}
 	}
-
-//	@PutMapping("{loginId}/tag/{tweetId}")
-//	public ResponseEntity<String> tagUser(@PathVariable String loginId, @PathVariable String tweetId) {
-//		userService.tagUser(loginId, tweetId);
-//		return new ResponseEntity<>("Successfully tagged user " + loginId, HttpStatus.CREATED);
-//	}
 
 }

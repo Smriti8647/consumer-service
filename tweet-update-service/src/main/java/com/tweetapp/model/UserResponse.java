@@ -2,9 +2,9 @@ package com.tweetapp.model;
 
 public class UserResponse {
 
-	public String avtar;
-	public String loginId;
-	public String name;
+	private String avtar;
+	private String loginId;
+	private String name;
 
 	public String getAvtar() {
 		return avtar;

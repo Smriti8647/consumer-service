@@ -33,7 +33,6 @@ public class TagConsumerConfiService {
 	public ConcurrentKafkaListenerContainerFactory<String, TagRequest> userKafkaListenerFactory(){
 		ConcurrentKafkaListenerContainerFactory<String, TagRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(userConsumerFactory());
-		System.out.println("satyam");
 		return factory;
 	}
 }

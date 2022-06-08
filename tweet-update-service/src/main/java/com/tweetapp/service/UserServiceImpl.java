@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
-import com.tweetapp.controller.UpdateController;
 import com.tweetapp.exceptions.ResourceNotFoundException;
 import com.tweetapp.model.ForgotPasswordRequest;
 import com.tweetapp.model.LoginResponse;
@@ -24,15 +23,14 @@ import com.tweetapp.repository.UserRepository;
 @Service
 public class UserServiceImpl implements UserService {
 
-	public static final Logger LOGGER = LoggerFactory.getLogger(UpdateController.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 	private final UserRepository userRepository;
 	private final TagRepository tagRepository;
 
-//	@Autowired
-//	UserRepository userRepository;
-
 	// @Value("kafka-topic")
 	private static final String TOPIC = "tweetTag";
+	
+	private String noUserMsg="User not present in Database";
 
 	@Autowired
 	public UserServiceImpl(UserRepository userRepository,TagRepository tagRepository) {
@@ -44,9 +42,9 @@ public class UserServiceImpl implements UserService {
 	public String saveUser(User user) {
 		Boolean isUserWithEmailPresent = userRepository.findUserByEmail(user.getEmail()).isPresent();
 		Boolean isUserWithIdPresent = userRepository.findById(user.getLoginId()).isPresent();
-		if (isUserWithIdPresent) {
+		if (isUserWithIdPresent.booleanValue()) {
 			return "This login id is already registered";
-		} else if (isUserWithEmailPresent) {
+		} else if (isUserWithEmailPresent.booleanValue()) {
 			return "This email id is already registered";
 		} else {
 			user.setRole("ROLE_USER");
@@ -93,7 +91,7 @@ public class UserServiceImpl implements UserService {
 						"{}, Information: Throwing ResourceNotFoundException with message 'User not present in Database' ",
 						this.getClass().getSimpleName());
 			}
-			throw new ResourceNotFoundException("User not present in Database");
+			throw new ResourceNotFoundException(noUserMsg);
 		}
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("{}, Information: Fetching User from DB", this.getClass().getSimpleName());
@@ -115,12 +113,12 @@ public class UserServiceImpl implements UserService {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("{}, Information: 'User not present in Database' ", this.getClass().getSimpleName());
 			}
-			throw new ResourceNotFoundException("User not present in Database");
+			throw new ResourceNotFoundException(noUserMsg);
 		}
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("{}, Information: Fetching User Details from DB", this.getClass().getSimpleName());
 		}
-		if (user.get().getQuestion() == request.getQues() && user.get().getAns() == request.getAns()) {
+		if (user.get().getQuestion().equalsIgnoreCase(request.getQues())  && user.get().getAns().equalsIgnoreCase(request.getAns())) {
 			user.get().setPassword(request.getNewPassword());
 			userRepository.save(user.get());
 			return "Succesfully Updated Passwoed";
@@ -128,24 +126,6 @@ public class UserServiceImpl implements UserService {
 			return "Request failed, question/answer does not match";
 		}
 	}
-
-//	@Override
-//	public void updatePassword(UpdatePasswordRequest updatePasswordRequest) {
-//		Optional<User> user = userRepository.findById(updatePasswordRequest.getLoginId());
-//		if (!user.isPresent()) {
-//			if (LOGGER.isDebugEnabled()) {
-//				LOGGER.debug(
-//						"{}, Information: Throwing ResourceNotFoundException with message 'User not present in Database' ",
-//						this.getClass().getSimpleName());
-//			}
-//			throw new ResourceNotFoundException("User not present in Database");
-//		}
-//		if (LOGGER.isDebugEnabled()) {
-//			LOGGER.debug("{}, Information: Updating Password in DB", this.getClass().getSimpleName());
-//		}
-//		user.get().setPassword(updatePasswordRequest.getNewPassword());
-//		userRepository.save(user.get());
-//	}
 
 	@Override
 	public List<UserResponse> searchUsers(String loginId) {
@@ -171,7 +151,7 @@ public class UserServiceImpl implements UserService {
 						"{}, Information: Throwing ResourceNotFoundException with message 'User not present in Database' ",
 						this.getClass().getSimpleName());
 			}
-			throw new ResourceNotFoundException("User not present in Database");
+			throw new ResourceNotFoundException(noUserMsg);
 		}
 		return tag.get();
 	}
