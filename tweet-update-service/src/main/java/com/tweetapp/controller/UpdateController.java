@@ -225,13 +225,16 @@ public class UpdateController {
 	}
 
 	@GetMapping("{loginId}/tagged-tweets")
-	public ResponseEntity<TagDto> taggedTweets(@PathVariable String loginId) {
+	public ResponseEntity<?> taggedTweets(@PathVariable String loginId) {
 		TagDto tag = new TagDto();
 		try {
 			tag = userService.taggedTweets(loginId);
 			return new ResponseEntity<>(tag, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
 			return new ResponseEntity<>(tag, HttpStatus.NOT_FOUND);
+		}
+		catch (ResourceAlreadyPresentException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
 		}
 	}
 

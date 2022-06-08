@@ -171,6 +171,9 @@ public class UserServiceImpl implements UserService {
 				tagRepository.insert(tagRecord);
 			} else {
 				List<String> tweetIdList = tagDto.get().getTweetId();
+				if(tweetIdList.contains(tag.getTweetId())) {
+					throw new ResourceAlreadyPresentException("user  "+user+" is already tagged in tweet "+tag.getTweetId());
+				}
 				tweetIdList.add(tag.getTweetId());
 				tagDto.get().setTweetId(tweetIdList);
 				tagRepository.save(tagDto.get());
