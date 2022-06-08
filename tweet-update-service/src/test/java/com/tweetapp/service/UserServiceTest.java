@@ -23,10 +23,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.tweetapp.exceptions.ResourceNotFoundException;
+import com.tweetapp.model.ForgotPasswordRequest;
 import com.tweetapp.model.LoginResponse;
-import com.tweetapp.model.UpdatePasswordRequest;
+import com.tweetapp.model.TagDto;
 import com.tweetapp.model.User;
 import com.tweetapp.model.UserResponse;
+import com.tweetapp.repository.TagRepository;
 import com.tweetapp.repository.UserRepository;
 
 @SpringBootTest
@@ -38,13 +40,16 @@ public class UserServiceTest {
 
 	@MockBean
 	public UserRepository userRepository;
+	
+	@MockBean
+	public TagRepository tagRepository;
 
 	@Mock
 	public User user;
 
 	@BeforeEach
 	public void setUp() {
-		userService = new UserServiceImpl(userRepository);
+		userService = new UserServiceImpl(userRepository,tagRepository);
 	}
 
 	public void setUser() {
@@ -101,23 +106,36 @@ public class UserServiceTest {
 		List<UserResponse> userResponseList = userService.searchUsers("sas");
 		assertTrue(userResponseList.isEmpty());
 	}
-
+	
 	@Test
-	public void updatePassword_SuccessfullyUpdated() throws ResourceNotFoundException {
+	public void forgotPassword_SuccessfullyUpdated() throws ResourceNotFoundException {
 		setUser();
 		when(userRepository.findById("sasha")).thenReturn(Optional.of(user));
-		UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest();
-		updatePasswordRequest.setLoginId("sasha");
-		updatePasswordRequest.setNewPassword("newPass");
-		userService.updatePassword(updatePasswordRequest);
+		ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
+		forgotPasswordRequest.setQues("primary school");
+		forgotPasswordRequest.setAns("dyal singh public school");
+		forgotPasswordRequest.setNewPassword("newPass");
+		userService.forgotPassword(forgotPasswordRequest,"sasha");
 		assertEquals("newPass", user.getPassword());
 	}
-
+	
 	@Test
-	public void updatePassword_throwsException() {
+	public void forgotPassword_returnFalse() throws ResourceNotFoundException {
+		setUser();
+		when(userRepository.findById("sasha")).thenReturn(Optional.of(user));
+		ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
+		forgotPasswordRequest.setQues("primary school");
+		forgotPasswordRequest.setAns("dsps");
+		forgotPasswordRequest.setNewPassword("newPass");
+		String res=userService.forgotPassword(forgotPasswordRequest,"sasha");
+		assertEquals("Request failed, question/answer does not match", res);
+	}
+	
+	@Test
+	public void forgotPassword_throwsException() {
 		when(userRepository.findById(anyString())).thenReturn(Optional.empty());
-		UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest();
-		assertThrows(ResourceNotFoundException.class, () -> userService.updatePassword(updatePasswordRequest));
+		ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
+		assertThrows(ResourceNotFoundException.class, () -> userService.forgotPassword(forgotPasswordRequest, "sasha"));
 	}
 
 	@Test
@@ -142,4 +160,22 @@ public class UserServiceTest {
 		String msg = userService.saveUser(user);
 		assertEquals("Successful with id " + user.getLoginId(), msg);
 	}
+	
+	@Test
+	public void taggedTweets_throwsException() {
+		when( tagRepository.findById("sasha")).thenReturn(Optional.empty());
+		assertThrows(ResourceNotFoundException.class, () -> userService.taggedTweets("sasha"));
+	}
+	@Test
+	public void taggedTweets() {
+		TagDto tag=new TagDto();
+		tag.setUser("sasha");
+		List<String> tweetList=new ArrayList<>();
+		tweetList.add("abc");
+		tag.setTweetId(tweetList);
+		when( tagRepository.findById("sasha")).thenReturn(Optional.of(tag));
+		TagDto res=userService.taggedTweets("sasha");
+		assertNotNull(res);
+	}
+	
 }

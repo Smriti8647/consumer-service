@@ -4,6 +4,7 @@ public class ForgotPasswordRequest {
 
 	private String ques;
 	private String ans;
+	private String newPassword;
 
 	public String getQues() {
 		return ques;
@@ -20,5 +21,13 @@ public class ForgotPasswordRequest {
 	public void setAns(String ans) {
 		this.ans = ans;
 	}
+
+	public String getNewPassword() {
+		return newPassword;
+	}
+
+	public void setNewPassword(String newPassword) {
+		this.newPassword = newPassword;
+	}	
 
 }

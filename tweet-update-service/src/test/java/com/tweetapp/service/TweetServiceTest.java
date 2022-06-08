@@ -81,9 +81,15 @@ public class TweetServiceTest {
 	}
 
 	@Test
-	public void testUpdateTweet() {
+	public void testUpdateTweet() throws ResourceNotFoundException {
 		when(tweetRepository.findById("abc")).thenReturn(Optional.of(tweet));
 		tweetService.updateTweet("abc", "heyyy");
+	}
+	
+	@Test
+	public void testUpdateTweet_ThrowsException() {
+		when(tweetRepository.findById(anyString())).thenReturn(Optional.empty());
+		assertThrows(ResourceNotFoundException.class, () -> tweetService.updateTweet("abc", "heyyy"));
 	}
 
 	@Test

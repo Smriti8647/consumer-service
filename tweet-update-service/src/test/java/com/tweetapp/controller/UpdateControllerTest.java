@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tweetapp.model.Comment;
 import com.tweetapp.model.ForgotPasswordRequest;
 import com.tweetapp.model.Tweet;
-import com.tweetapp.model.UpdatePasswordRequest;
 import com.tweetapp.model.User;
 import com.tweetapp.model.UserResponse;
 import com.tweetapp.service.TweetService;
@@ -47,10 +46,10 @@ public class UpdateControllerTest {
 	TweetService tweetService;
 	private MockMvc mockMvc;
 
-	private String mapToJson(Object obj) throws JsonProcessingException {
-		ObjectMapper objectMapper = new ObjectMapper();
-		return objectMapper.writeValueAsString(obj);
-	}
+//	private String mapToJson(Object obj) throws JsonProcessingException {
+//		ObjectMapper objectMapper = new ObjectMapper();
+//		return objectMapper.writeValueAsString(obj);
+//	}
 
 	@BeforeEach
 	public void setup() throws Exception {
@@ -112,15 +111,6 @@ public class UpdateControllerTest {
 		user.setAns("dyal singh public school");
 		when(userService.saveUser(user)).thenReturn("Successful with id " + user.getLoginId());
 		ResponseEntity<String> object = updateController.registerUser(user);
-		assertNotNull(object);
-	}
-
-	@Test
-	public void testUpdatePassword() throws Exception {
-		UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest();
-		updatePasswordRequest.setLoginId("sasha");
-		updatePasswordRequest.setNewPassword("newPass");
-		ResponseEntity<String> object = updateController.updatePassword(updatePasswordRequest);
 		assertNotNull(object);
 	}
 

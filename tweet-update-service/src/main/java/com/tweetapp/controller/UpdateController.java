@@ -20,9 +20,7 @@ import com.tweetapp.exceptions.ResourceNotFoundException;
 import com.tweetapp.model.Comment;
 import com.tweetapp.model.LoginResponse;
 import com.tweetapp.model.TagDto;
-import com.tweetapp.model.TagRequest;
 import com.tweetapp.model.Tweet;
-import com.tweetapp.model.UpdatePasswordRequest;
 import com.tweetapp.model.User;
 import com.tweetapp.model.UserResponse;
 import com.tweetapp.service.TweetService;
@@ -43,14 +41,18 @@ public class UpdateController {
 	@PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> registerUser(@RequestBody User user) {
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("User Request: {}", user);
+			LOGGER.debug("{}, User Request: {}",this.getClass().getSimpleName(), user);
 		}
 		String res = userService.saveUser(user);
 		if (res.startsWith("Successful with id")) {
-			System.out.println("regsiterUser");
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Succesfully registered user : {}", user);
+			}
 			return new ResponseEntity<>(res, HttpStatus.CREATED);
 		} else {
-			System.out.println("regsiterUser");
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("User {} not registered", user);
+			}
 			return new ResponseEntity<>(res, HttpStatus.CONFLICT);
 
 		}
@@ -58,15 +60,26 @@ public class UpdateController {
 
 	@GetMapping("/all-users")
 	public ResponseEntity<List<UserResponse>> allUsers() {
+		
 		List<UserResponse> userResponseList = userService.getAllUsers();
 		HttpStatus status = HttpStatus.OK;
-		if (userResponseList.isEmpty())
+		if (userResponseList.isEmpty()) {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("{}, Users not found",this.getClass().getSimpleName());
+			}
 			status = HttpStatus.NOT_FOUND;
+		}	
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Returning all users");
+		}
 		return new ResponseEntity<>(userResponseList, status);
 	}
 
 	@GetMapping("{loginId}/search-user")
 	public ResponseEntity<List<UserResponse>> findUser(@PathVariable String loginId) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("{}, Calling DB to fetch a user: {}",this.getClass().getSimpleName(), loginId);
+		}
 		return new ResponseEntity<>(userService.searchUsers(loginId), HttpStatus.OK);
 	}
 
@@ -76,37 +89,42 @@ public class UpdateController {
 //		return userService.getUser(loginId);
 //	}
 
-	// ResourceNotFoundException
 	@GetMapping("/{loginId}/forgot")
-	public ResponseEntity<Boolean> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest,
+	public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest,
 			@PathVariable String loginId) {
 		try {
-			Boolean result = userService.forgotPassword(forgotPasswordRequest, loginId);
+			String result = userService.forgotPassword(forgotPasswordRequest, loginId);
 			return new ResponseEntity<>(result, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
-			return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>("", HttpStatus.NOT_FOUND);
 
 		}
 	}
 
-	@PutMapping("/update-Password")
-	public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordRequest updatePasswordRequest) {
-		userService.updatePassword(updatePasswordRequest);
-		try {
-			userService.updatePassword(updatePasswordRequest);
-			return new ResponseEntity<>(
-					"Successfully changed password for loginId " + updatePasswordRequest.getLoginId(), HttpStatus.OK);
-		} catch (ResourceNotFoundException e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-		}
-
-	}
+//	@PutMapping("/update-Password")
+//	public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordRequest updatePasswordRequest) {
+//		userService.updatePassword(updatePasswordRequest);
+//		try {
+//			userService.updatePassword(updatePasswordRequest);
+//			if (LOGGER.isDebugEnabled()) {
+//				LOGGER.debug("Succesfully updated Password for {}",updatePasswordRequest.getLoginId());
+//			}
+//			return new ResponseEntity<>(
+//					"Successfully changed password for loginId " + updatePasswordRequest.getLoginId(), HttpStatus.OK);
+//		} catch (ResourceNotFoundException e) {
+//			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+//		}
+//
+//	}
 
 	@GetMapping("{loginId}/login")
 	public ResponseEntity<LoginResponse> login(@PathVariable String loginId) {
 		LoginResponse loginResponse = new LoginResponse();
 		try {
 			loginResponse = userService.login(loginId);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("{}, Returning Login Response for {}",this.getClass().getSimpleName(),loginId);
+			}
 			return new ResponseEntity<>(loginResponse, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
 			return new ResponseEntity<>(loginResponse, HttpStatus.NOT_FOUND);
@@ -118,8 +136,16 @@ public class UpdateController {
 	public ResponseEntity<List<Tweet>> allTweets() {
 		List<Tweet> tweetList = tweetService.getAllTweets();
 		HttpStatus status = HttpStatus.OK;
-		if (tweetList.isEmpty())
+		if (tweetList.isEmpty()) {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("{}, No Tweets found", this.getClass().getSimpleName());
+			}
 			status = HttpStatus.NOT_FOUND;
+		}else {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("{}, Returning All Tweets", this.getClass().getSimpleName());
+			}
+		}		
 		return new ResponseEntity<>(tweetList, status);
 	}
 
@@ -127,14 +153,26 @@ public class UpdateController {
 	public ResponseEntity<List<Tweet>> userTweets(@PathVariable String loginId) {
 		List<Tweet> tweetList = tweetService.getTweetByUsername(loginId);
 		HttpStatus status = HttpStatus.OK;
-		if (tweetList.isEmpty())
+		if (tweetList.isEmpty()) {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("{}, No Tweets found",this.getClass().getSimpleName());
+			}
 			status = HttpStatus.NOT_FOUND;
+		}
+		else {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("{}, Returning All Tweets",this.getClass().getSimpleName());
+			}
+		}
 		return new ResponseEntity<>(tweetList, status);
 	}
 
 	@PostMapping("add-tweet")
 	public ResponseEntity<String> addTweet(@RequestBody Tweet tweet) {
 		tweetService.postTweet(tweet);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("{}, Successfully tweet added for user : {}",this.getClass().getSimpleName(),tweet.getLoginId());
+		}
 		return new ResponseEntity<>("Successfully tweet added for loginId " + tweet.getId(), HttpStatus.CREATED);
 	}
 
@@ -142,6 +180,9 @@ public class UpdateController {
 	public ResponseEntity<String> updateTweet(@RequestBody String updatedTweet, @PathVariable String id) {
 		try {
 			tweetService.updateTweet(id, updatedTweet);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("{}, Successfully updated tweet with id: {}", this.getClass().getSimpleName(),id);
+			}
 			return new ResponseEntity<>("Successfully updated Tweet ", HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -151,6 +192,9 @@ public class UpdateController {
 	@DeleteMapping("{loginId}/delete-tweet/{id}")
 	public ResponseEntity<String> deleteTweet(@PathVariable String loginId, @PathVariable String id) {
 		tweetService.deleteTweet(loginId, id);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("{}, Successfully deleted tweet with id: {}",this.getClass().getSimpleName(), id);
+		}
 		return new ResponseEntity<>("Successfully deleted Tweet ", HttpStatus.OK);
 	}
 
@@ -158,6 +202,9 @@ public class UpdateController {
 	public ResponseEntity<String> likeTweet(@PathVariable String loginId, @PathVariable String id) {
 		try {
 			tweetService.likeTweet(loginId, id);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("{}, Successfully added like to a tweet with id: {}",this.getClass().getSimpleName(), id);
+			}
 			return new ResponseEntity<>("Tweet liked by " + loginId, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -168,7 +215,11 @@ public class UpdateController {
 	@PutMapping("{loginId}/dislike/{id}")
 	public ResponseEntity<String> dislikeTweet(@PathVariable String loginId, @PathVariable String id) {
 		try {
+		
 			tweetService.dislikeTweet(loginId, id);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("{}, Successfully removed like from a tweet with id: {}",this.getClass().getSimpleName(), id);
+			}
 			return new ResponseEntity<>("Tweet disliked by " + loginId, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -180,6 +231,9 @@ public class UpdateController {
 	public ResponseEntity<String> replyTweet(@RequestBody Comment comment, @PathVariable String id) {
 		try {
 			tweetService.replyTweet(comment, id);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("{}, Successfully added reply to a tweet with id: {}",this.getClass().getSimpleName(), id);
+			}
 			return new ResponseEntity<>("Successfully added reply to tweet ", HttpStatus.CREATED);
 		} catch (ResourceNotFoundException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
