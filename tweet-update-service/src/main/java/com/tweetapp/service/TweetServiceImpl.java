@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tweetapp.exceptions.ResourceAlreadyPresentException;
 import com.tweetapp.exceptions.ResourceNotFoundException;
 import com.tweetapp.model.Comment;
 import com.tweetapp.model.Tweet;
@@ -58,6 +59,13 @@ public class TweetServiceImpl implements TweetService {
 
 	@Override
 	public void deleteTweet(String loginId, String id) {
+		Optional<Tweet> tweet = tweetRepository.findById(id);
+		if (tweet.isEmpty()) {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(exceptionMsg, this.getClass().getSimpleName());
+			}
+			throw new ResourceNotFoundException(noTweetMsg);
+		}
 		tweetRepository.deleteById(id);
 	}
 
@@ -77,6 +85,9 @@ public class TweetServiceImpl implements TweetService {
 			tweetRepository.save(tweet.get());
 		} else {
 			List<String> isLikeList = tweet.get().getIsLikeList();
+			if(isLikeList.contains(loginId)) {
+				throw new ResourceAlreadyPresentException("Tweet id "+id+" is already liked by "+loginId);
+			}
 			isLikeList.add(loginId);
 			tweet.get().setIsLikeList(isLikeList);
 			tweetRepository.save(tweet.get());
@@ -94,9 +105,15 @@ public class TweetServiceImpl implements TweetService {
 			throw new ResourceNotFoundException(noTweetMsg);
 		}
 		List<String> isLikeList = tweet.get().getIsLikeList();
-		isLikeList.remove(loginId);
-		tweet.get().setIsLikeList(isLikeList);
-		tweetRepository.save(tweet.get());
+		if(isLikeList!=null && isLikeList.contains(loginId)) {
+			isLikeList.remove(loginId);
+			tweet.get().setIsLikeList(isLikeList);
+			tweetRepository.save(tweet.get());
+		}
+		else {
+			throw new ResourceNotFoundException("Tweet "+id+"is not liked by user "+loginId);
+		}
+		
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import com.tweetapp.exceptions.ResourceAlreadyPresentException;
 import com.tweetapp.exceptions.ResourceNotFoundException;
 import com.tweetapp.model.ForgotPasswordRequest;
 import com.tweetapp.model.LoginResponse;
@@ -43,9 +44,9 @@ public class UserServiceImpl implements UserService {
 		Boolean isUserWithEmailPresent = userRepository.findUserByEmail(user.getEmail()).isPresent();
 		Boolean isUserWithIdPresent = userRepository.findById(user.getLoginId()).isPresent();
 		if (isUserWithIdPresent.booleanValue()) {
-			return "This login id is already registered";
+			throw new ResourceAlreadyPresentException("The loginId "+user.getLoginId()+" is already registered");
 		} else if (isUserWithEmailPresent.booleanValue()) {
-			return "This email id is already registered";
+			throw new ResourceAlreadyPresentException("The emailId "+user.getEmail()+" is already registered");
 		} else {
 			user.setRole("ROLE_USER");
 			userRepository.save(user);
@@ -57,7 +58,7 @@ public class UserServiceImpl implements UserService {
 		UserResponse userResponse = new UserResponse();
 		userResponse.setAvtar(user.getAvtar());
 		userResponse.setLoginId(user.getLoginId());
-		userResponse.setName(user.getFirstName());
+		userResponse.setName(user.getFirstName()+" "+user.getLastName());
 		return userResponse;
 	}
 
