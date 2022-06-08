@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import com.tweetapp.exceptions.ResourceNotFoundException;
 import com.tweetapp.model.ForgotPasswordRequest;
 import com.tweetapp.model.LoginResponse;
+import com.tweetapp.model.Tag;
 import com.tweetapp.model.TagDto;
-import com.tweetapp.model.TagRequest;
 import com.tweetapp.model.User;
 import com.tweetapp.model.UserResponse;
 import com.tweetapp.repository.TagRepository;
@@ -157,7 +157,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@KafkaListener(topics = TOPIC, groupId = "group_id", containerFactory = "userKafkaListenerFactory")
-	public void consumeJson(TagRequest tag) {
+	public void consumeJson(Tag tag) {
 		List<String> userList = tag.getUsers();
 		for (String user : userList) {
 			Optional<TagDto> tagDto = tagRepository.findById(user);

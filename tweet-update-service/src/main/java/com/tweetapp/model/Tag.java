@@ -3,16 +3,16 @@ package com.tweetapp.model;
 import java.util.List;
 
 
-public class TagRequest {
-	
+public class Tag {
+
 	private String tweetId;
 	private List<String> users;
 
-	public TagRequest() {
+	public Tag() {
 		super();
 	}
 
-	public TagRequest(String tweetId, List<String> users) {
+	public Tag(String tweetId, List<String> users) {
 		super();
 		this.tweetId = tweetId;
 		this.users = users;
@@ -32,11 +32,6 @@ public class TagRequest {
 
 	public void setUsers(List<String> users) {
 		this.users = users;
-	}
-
-	@Override
-	public String toString() {
-		return "Tag [tweetId=" + tweetId + ", users=" + users + "]";
 	}
 
 }

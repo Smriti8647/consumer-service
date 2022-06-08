@@ -84,7 +84,7 @@ public class UpdateController {
 	}
 
 
-	@GetMapping("/{loginId}/forgot")
+	@PostMapping("/{loginId}/forgot")
 	public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest,
 			@PathVariable String loginId) {
 		try {
