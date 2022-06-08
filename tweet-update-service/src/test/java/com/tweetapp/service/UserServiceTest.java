@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,10 +15,8 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -33,14 +31,14 @@ import com.tweetapp.repository.TagRepository;
 import com.tweetapp.repository.UserRepository;
 
 @SpringBootTest
- class UserServiceTest {
+class UserServiceTest {
 
 	@InjectMocks
 	public UserServiceImpl userService;
 
 	@MockBean
 	public UserRepository userRepository;
-	
+
 	@MockBean
 	public TagRepository tagRepository;
 
@@ -49,7 +47,7 @@ import com.tweetapp.repository.UserRepository;
 
 	@BeforeEach
 	public void setUp() {
-		userService = new UserServiceImpl(userRepository,tagRepository);
+		userService = new UserServiceImpl(userRepository, tagRepository);
 	}
 
 	public void setUser() {
@@ -67,7 +65,7 @@ import com.tweetapp.repository.UserRepository;
 	}
 
 	@Test
-	 void testLogin() throws ResourceNotFoundException {
+	void testLogin() throws ResourceNotFoundException {
 		setUser();
 		when(userRepository.findById("sasha")).thenReturn(Optional.of(user));
 		LoginResponse loginResponse1 = userService.login(user.getLoginId());
@@ -75,13 +73,13 @@ import com.tweetapp.repository.UserRepository;
 	}
 
 	@Test
-	 void testLogin_throwsException() {
+	void testLogin_throwsException() {
 		when(userRepository.findById(anyString())).thenReturn(Optional.empty());
 		assertThrows(ResourceNotFoundException.class, () -> userService.login(user.getLoginId()));
 	}
 
 	@Test
-	 void testGetAllUsers() throws ResourceNotFoundException {
+	void testGetAllUsers() throws ResourceNotFoundException {
 		setUser();
 		List<User> userList = new ArrayList<>();
 		userList.add(user);
@@ -91,7 +89,7 @@ import com.tweetapp.repository.UserRepository;
 	}
 
 	@Test
-	 void testSearchUser_UsersPresent() {
+	void testSearchUser_UsersPresent() {
 		setUser();
 		List<User> userList = new ArrayList<>();
 		userList.add(user);
@@ -101,79 +99,80 @@ import com.tweetapp.repository.UserRepository;
 	}
 
 	@Test
-	 void testSearchUser_NoUserPresent() {
+	void testSearchUser_NoUserPresent() {
 		when(userRepository.findUsersByPartialId(anyString())).thenReturn(Collections.emptyList());
 		List<UserResponse> userResponseList = userService.searchUsers("sas");
 		assertTrue(userResponseList.isEmpty());
 	}
-	
+
 	@Test
-	 void forgotPassword_SuccessfullyUpdated() throws ResourceNotFoundException {
+	void forgotPassword_SuccessfullyUpdated() throws ResourceNotFoundException {
 		setUser();
 		when(userRepository.findById("sasha")).thenReturn(Optional.of(user));
 		ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
 		forgotPasswordRequest.setQues("primary school");
 		forgotPasswordRequest.setAns("dyal singh public school");
 		forgotPasswordRequest.setNewPassword("newPass");
-		userService.forgotPassword(forgotPasswordRequest,"sasha");
+		userService.forgotPassword(forgotPasswordRequest, "sasha");
 		assertEquals("newPass", user.getPassword());
 	}
-	
+
 	@Test
-	 void forgotPassword_returnFalse() throws ResourceNotFoundException {
+	void forgotPassword_returnFalse() throws ResourceNotFoundException {
 		setUser();
 		when(userRepository.findById("sasha")).thenReturn(Optional.of(user));
 		ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
 		forgotPasswordRequest.setQues("primary school");
 		forgotPasswordRequest.setAns("dsps");
 		forgotPasswordRequest.setNewPassword("newPass");
-		String res=userService.forgotPassword(forgotPasswordRequest,"sasha");
+		String res = userService.forgotPassword(forgotPasswordRequest, "sasha");
 		assertEquals("Request failed, question/answer does not match", res);
 	}
-	
+
 	@Test
-	 void forgotPassword_throwsException() {
+	void forgotPassword_throwsException() {
 		when(userRepository.findById(anyString())).thenReturn(Optional.empty());
 		ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
 		assertThrows(ResourceNotFoundException.class, () -> userService.forgotPassword(forgotPasswordRequest, "sasha"));
 	}
 
 	@Test
-	 void testSaveUser_EmailAlreadyPresent() {
+	void testSaveUser_EmailAlreadyPresent() {
 		setUser();
 		when(userRepository.findUserByEmail("qwerty@gmail.com")).thenReturn(Optional.of(user));
 		assertThrows(ResourceAlreadyPresentException.class, () -> userService.saveUser(user));
 	}
 
 	@Test
-	 void testSaveUser_loginIdAlreadyPresent() {
+	void testSaveUser_loginIdAlreadyPresent() {
 		setUser();
 		when(userRepository.findById("sasha")).thenReturn(Optional.of(user));
 		assertThrows(ResourceAlreadyPresentException.class, () -> userService.saveUser(user));
 	}
 
 	@Test
-	 void testSaveUser() {
+	void testSaveUser() {
 		setUser();
 		String msg = userService.saveUser(user);
 		assertEquals("Successful with id " + user.getLoginId(), msg);
 	}
-	
+
 	@Test
-	 void taggedTweets_throwsException() {
-		when( tagRepository.findById("sasha")).thenReturn(Optional.empty());
+	void taggedTweets_throwsException() {
+		when(tagRepository.findById("sasha")).thenReturn(Optional.empty());
 		assertThrows(ResourceNotFoundException.class, () -> userService.taggedTweets("sasha"));
 	}
+
 	@Test
-	 void taggedTweets() {
-		TagDto tag=new TagDto();
+	void taggedTweets() {
+		TagDto tag = new TagDto();
 		tag.setUser("sasha");
-		List<String> tweetList=new ArrayList<>();
+		List<String> tweetList = new ArrayList<>();
 		tweetList.add("abc");
 		tag.setTweetId(tweetList);
-		when( tagRepository.findById("sasha")).thenReturn(Optional.of(tag));
-		TagDto res=userService.taggedTweets("sasha");
+		when(tagRepository.findById("sasha")).thenReturn(Optional.of(tag));
+		TagDto res = userService.taggedTweets("sasha");
 		assertNotNull(res);
 	}
-	
+
 }

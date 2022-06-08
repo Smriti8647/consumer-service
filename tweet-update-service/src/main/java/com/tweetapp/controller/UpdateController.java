@@ -232,8 +232,7 @@ public class UpdateController {
 			return new ResponseEntity<>(tag, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
 			return new ResponseEntity<>(tag, HttpStatus.NOT_FOUND);
-		}
-		catch (ResourceAlreadyPresentException e) {
+		} catch (ResourceAlreadyPresentException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
 		}
 	}

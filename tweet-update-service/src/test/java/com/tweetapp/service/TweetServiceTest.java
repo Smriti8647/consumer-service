@@ -61,7 +61,7 @@ class TweetServiceTest {
 	}
 
 	@Test
-	 void testGetTweetByUsername() throws ResourceNotFoundException {
+	void testGetTweetByUsername() throws ResourceNotFoundException {
 		setTweet();
 		List<Tweet> tweetList = new ArrayList<>();
 		tweetList.add(tweet);
@@ -71,7 +71,7 @@ class TweetServiceTest {
 	}
 
 	@Test
-	 void testGetAllTweets() throws ResourceNotFoundException {
+	void testGetAllTweets() throws ResourceNotFoundException {
 		setTweet();
 		List<Tweet> tweetList = new ArrayList<>();
 		tweetList.add(tweet);
@@ -85,17 +85,17 @@ class TweetServiceTest {
 		setTweet();
 		when(tweetRepository.findById("abc")).thenReturn(Optional.of(tweet));
 		tweetService.updateTweet("abc", "hey");
-		assertEquals("hey",tweet.getMessage());
+		assertEquals("hey", tweet.getMessage());
 	}
-	
+
 	@Test
-	 void testUpdateTweet_ThrowsException() {
+	void testUpdateTweet_ThrowsException() {
 		when(tweetRepository.findById(anyString())).thenReturn(Optional.empty());
 		assertThrows(ResourceNotFoundException.class, () -> tweetService.updateTweet("abc", "heyyy"));
 	}
 
 	@Test
-	 void testLikeTweet() throws ResourceNotFoundException {
+	void testLikeTweet() throws ResourceNotFoundException {
 		setTweet();
 		when(tweetRepository.findById("abc")).thenReturn(Optional.of(tweet));
 		tweetService.likeTweet("sam", "abc");
@@ -103,13 +103,13 @@ class TweetServiceTest {
 	}
 
 	@Test
-	 void testLikeTweet_ThrowsException() {
+	void testLikeTweet_ThrowsException() {
 		when(tweetRepository.findById(anyString())).thenReturn(Optional.empty());
 		assertThrows(ResourceNotFoundException.class, () -> tweetService.likeTweet("sam", "abc"));
 	}
 
 	@Test
-	 void testDislikeTweet() throws ResourceNotFoundException {
+	void testDislikeTweet() throws ResourceNotFoundException {
 		setTweet();
 		when(tweetRepository.findById("abc")).thenReturn(Optional.of(tweet));
 		tweetService.dislikeTweet("sarah", "abc");
@@ -117,13 +117,13 @@ class TweetServiceTest {
 	}
 
 	@Test
-	 void testDisLikeTweet_ThrowsException() {
+	void testDisLikeTweet_ThrowsException() {
 		when(tweetRepository.findById(anyString())).thenReturn(Optional.empty());
 		assertThrows(ResourceNotFoundException.class, () -> tweetService.dislikeTweet("sam", "abc"));
 	}
 
 	@Test
-	 void testReplyTweet() throws ResourceNotFoundException {
+	void testReplyTweet() throws ResourceNotFoundException {
 		setTweet();
 		when(tweetRepository.findById("abc")).thenReturn(Optional.of(tweet));
 		Comment comment = new Comment();
@@ -135,7 +135,7 @@ class TweetServiceTest {
 	}
 
 	@Test
-	 void testReplyTweet_ThrowsException() {
+	void testReplyTweet_ThrowsException() {
 		when(tweetRepository.findById(anyString())).thenReturn(Optional.empty());
 		assertThrows(RuntimeException.class, () -> tweetService.replyTweet(new Comment(), "abc"));
 	}

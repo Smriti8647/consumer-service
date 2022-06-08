@@ -2,7 +2,6 @@ package com.tweetapp.model;
 
 import java.util.List;
 
-
 public class Tag {
 
 	private String tweetId;

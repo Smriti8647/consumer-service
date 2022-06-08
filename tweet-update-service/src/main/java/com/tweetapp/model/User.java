@@ -8,27 +8,27 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Document
 public class User {
-	
+
 	@Id
 	private String loginId;
-	
+
 	private String avtar;
-	
+
 	private String firstName;
-	
+
 	private String lastName;
-	
-	@Indexed(unique=true)
+
+	@Indexed(unique = true)
 	private String email;
-	
+
 	private String password;
-	
+
 	private String contactNumber;
-	
+
 	private String question;
-	
+
 	private String ans;
-	
+
 	@JsonIgnore
 	private String role;
 

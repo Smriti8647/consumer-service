@@ -9,6 +9,7 @@ import com.tweetapp.model.Tweet;
 public interface TweetRepository extends MongoRepository<Tweet, String> {
 
 	List<Tweet> findAllByLoginId(String loginId);
+
 	Tweet findByLoginIdAndId(String loginId, String id);
-	
+
 }

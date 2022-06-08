@@ -20,17 +20,17 @@ import com.tweetapp.model.Tag;
 public class TagConsumerConfiService {
 
 	@Bean
-	public ConsumerFactory<String,Tag> userConsumerFactory(){
-		Map<String,Object> config = new HashMap<>();
+	public ConsumerFactory<String, Tag> userConsumerFactory() {
+		Map<String, Object> config = new HashMap<>();
 		config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
 		config.put(ConsumerConfig.GROUP_ID_CONFIG, "group_id");
 		config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-		config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,JsonDeserializer.class);
+		config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 		return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), new JsonDeserializer<>(Tag.class));
 	}
-	
+
 	@Bean
-	public ConcurrentKafkaListenerContainerFactory<String, Tag> userKafkaListenerFactory(){
+	public ConcurrentKafkaListenerContainerFactory<String, Tag> userKafkaListenerFactory() {
 		ConcurrentKafkaListenerContainerFactory<String, Tag> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(userConsumerFactory());
 		return factory;

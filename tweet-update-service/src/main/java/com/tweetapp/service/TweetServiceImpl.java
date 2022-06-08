@@ -86,7 +86,7 @@ public class TweetServiceImpl implements TweetService {
 		} else {
 			List<String> isLikeList = tweet.get().getIsLikeList();
 			if(isLikeList.contains(loginId)) {
-				throw new ResourceAlreadyPresentException("Tweet id "+id+" is already liked by "+loginId);
+				throw new ResourceAlreadyPresentException("Tweet id " + id + " is already liked by " + loginId);
 			}
 			isLikeList.add(loginId);
 			tweet.get().setIsLikeList(isLikeList);

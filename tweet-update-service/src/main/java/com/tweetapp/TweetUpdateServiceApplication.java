@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @SpringBootApplication
 @EnableMongoRepositories
 public class TweetUpdateServiceApplication {
-	
+
 	public static void main(String[] args) {
 		SpringApplication.run(TweetUpdateServiceApplication.class, args);
 	}
