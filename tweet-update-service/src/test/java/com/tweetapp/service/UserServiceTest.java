@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import com.tweetapp.exceptions.ResourceAlreadyPresentException;
 import com.tweetapp.exceptions.ResourceNotFoundException;
 import com.tweetapp.model.ForgotPasswordRequest;
 import com.tweetapp.model.LoginResponse;
@@ -141,16 +142,14 @@ import com.tweetapp.repository.UserRepository;
 	 void testSaveUser_EmailAlreadyPresent() {
 		setUser();
 		when(userRepository.findUserByEmail("qwerty@gmail.com")).thenReturn(Optional.of(user));
-		String msg = userService.saveUser(user);
-		assertEquals("This email id is already registered", msg);
+		assertThrows(ResourceAlreadyPresentException.class, () -> userService.saveUser(user));
 	}
 
 	@Test
 	 void testSaveUser_loginIdAlreadyPresent() {
 		setUser();
 		when(userRepository.findById("sasha")).thenReturn(Optional.of(user));
-		String msg = userService.saveUser(user);
-		assertEquals("This login id is already registered", msg);
+		assertThrows(ResourceAlreadyPresentException.class, () -> userService.saveUser(user));
 	}
 
 	@Test
