@@ -76,12 +76,28 @@ public class UpdateController {
 		return new ResponseEntity<>(userResponseList, status);
 	}
 
-	@GetMapping("{loginId}/search-user")
-	public ResponseEntity<List<UserResponse>> findUser(@PathVariable String loginId) {
+	@GetMapping("{loginId}/search-users")
+	public ResponseEntity<List<UserResponse>> findUsers(@PathVariable String loginId) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("{}, Calling DB to fetch a users: {}", this.getClass().getSimpleName(), loginId);
+		}
+		return new ResponseEntity<>(userService.searchUsers(loginId), HttpStatus.OK);
+	}
+	
+	@GetMapping("{loginId}/user")
+	public ResponseEntity<?> findUser(@PathVariable String loginId) {
+		try {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("{}, Calling DB to fetch a user: {}", this.getClass().getSimpleName(), loginId);
 		}
-		return new ResponseEntity<>(userService.searchUsers(loginId), HttpStatus.OK);
+		UserResponse userResponse=userService.getUser(loginId);
+		return new ResponseEntity<>(userResponse, HttpStatus.OK);
+		}
+		catch (ResourceNotFoundException e) {
+			return new ResponseEntity<>("User not Found", HttpStatus.NOT_FOUND);
+
+		}
+		
 	}
 
 	@PostMapping("/{loginId}/forgot")

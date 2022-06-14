@@ -21,5 +21,7 @@ public interface UserService {
 	public List<UserResponse> searchUsers(String loginId);
 
 	public TagDto taggedTweets(String loginId);
+	
+	public UserResponse getUser(String loginId);
 
 }

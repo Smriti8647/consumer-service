@@ -83,6 +83,20 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public UserResponse getUser(String loginId) {
+		Optional<User> user=userRepository.findById(loginId);
+		if (!user.isPresent()) {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("{}, Information: 'User not present in Database' ", this.getClass().getSimpleName());
+			}
+			throw new ResourceNotFoundException(noUserMsg);
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("{}, Information: Fetching User Details from DB", this.getClass().getSimpleName());
+		}
+		return populateUserResponse(user.get());
+	}
+	@Override
 	public LoginResponse login(String loginId) {
 		LoginResponse loginResponse = new LoginResponse();
 		Optional<User> user = userRepository.findById(loginId);
