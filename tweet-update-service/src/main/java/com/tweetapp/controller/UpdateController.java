@@ -1,5 +1,6 @@
 package com.tweetapp.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tweetapp.exceptions.ResourceAlreadyPresentException;
 import com.tweetapp.exceptions.ResourceNotFoundException;
+import com.tweetapp.model.AddTweetResponse;
 import com.tweetapp.model.Comment;
 import com.tweetapp.model.LoginResponse;
 import com.tweetapp.model.TagDto;
@@ -162,13 +164,13 @@ public class UpdateController {
 	}
 
 	@PostMapping("add-tweet")
-	public ResponseEntity<String> addTweet(@RequestBody Tweet tweet) {
-		tweetService.postTweet(tweet);
+	public ResponseEntity<AddTweetResponse> addTweet(@RequestBody Tweet tweet) {
+		AddTweetResponse response =tweetService.postTweet(tweet);
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("{}, Successfully tweet added for user : {}", this.getClass().getSimpleName(),
 					tweet.getLoginId());
 		}
-		return new ResponseEntity<>("Successfully tweet added for loginId " + tweet.getLoginId(), HttpStatus.CREATED);
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/update-tweet/{id}")
@@ -250,6 +252,17 @@ public class UpdateController {
 			return new ResponseEntity<>(tag, HttpStatus.NOT_FOUND);
 		} catch (ResourceAlreadyPresentException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+		}
+	}
+	
+	@PostMapping("get-tweets")
+	public ResponseEntity<List<Tweet>> getTweets(@RequestBody List<String> tweetIdList){
+		List<Tweet> tweetList=new ArrayList<>();
+		try {
+			tweetList = tweetService.getTweetsByTweetId(tweetIdList);
+			return new ResponseEntity<>(tweetList, HttpStatus.OK);
+		} catch (ResourceNotFoundException e) {
+			return new ResponseEntity<>(tweetList, HttpStatus.NOT_FOUND);
 		}
 	}
 

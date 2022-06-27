@@ -56,10 +56,10 @@ class UpdateControllerTest {
 		mockMvc.perform(get("/all-users")).andExpect(status().isNotFound());
 	}
 
-	@Test
-	void testSearchUser() throws Exception {
-		mockMvc.perform(get("/smriti/search-user")).andExpect(status().isOk());
-	}
+//	@Test
+//	void testSearchUser() throws Exception {
+//		mockMvc.perform(get("/smriti/search-user")).andExpect(status().isOk());
+//	}
 
 	@Test
 	void testForgotPassword() throws Exception {

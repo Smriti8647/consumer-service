@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.tweetapp.exceptions.ResourceAlreadyPresentException;
 import com.tweetapp.exceptions.ResourceNotFoundException;
+import com.tweetapp.model.AddTweetResponse;
 import com.tweetapp.model.Comment;
 import com.tweetapp.model.Tweet;
 import com.tweetapp.repository.TweetRepository;
@@ -40,8 +41,12 @@ public class TweetServiceImpl implements TweetService {
 	}
 
 	@Override
-	public void postTweet(Tweet tweet) {
-		tweetRepository.insert(tweet);
+	public AddTweetResponse postTweet(Tweet tweet) {
+		Tweet returnTweet=tweetRepository.insert(tweet);
+		AddTweetResponse response = new AddTweetResponse();
+		response.setLoginId(returnTweet.getLoginId());
+		response.setTweetId(returnTweet.getId());
+		return response;
 	}
 
 	@Override
@@ -136,6 +141,25 @@ public class TweetServiceImpl implements TweetService {
 			tweet.get().setCommentList(commentList);
 			tweetRepository.save(tweet.get());
 		}
+	}
+	
+	@Override
+	public List<Tweet> getTweetsByTweetId(List<String> tweetIdList){
+		List<Tweet> tweetList=new ArrayList<>();
+		tweetIdList.stream().forEach(tweetId->{
+			Optional<Tweet> tweet =tweetRepository.findById(tweetId);
+			if (tweet.isEmpty()) {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug(exceptionMsg, this.getClass().getSimpleName());
+				}
+				throw new ResourceNotFoundException(noTweetMsg);
+			}
+			else {
+				tweetList.add(tweet.get());
+			}
+		});
+		
+		return tweetList;
 	}
 
 }

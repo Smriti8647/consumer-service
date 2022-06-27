@@ -2,6 +2,7 @@ package com.tweetapp.service;
 
 import java.util.List;
 
+import com.tweetapp.model.AddTweetResponse;
 import com.tweetapp.model.Comment;
 import com.tweetapp.model.Tweet;
 
@@ -11,7 +12,7 @@ public interface TweetService {
 
 	public List<Tweet> getTweetByUsername(String loginId);
 
-	public void postTweet(Tweet tweet);
+	public AddTweetResponse postTweet(Tweet tweet);
 
 	public void updateTweet(String id, String updatedTweet);
 
@@ -22,4 +23,6 @@ public interface TweetService {
 	public void dislikeTweet(String loginId, String id);
 
 	public void replyTweet(Comment comment, String id);
+	
+	public List<Tweet> getTweetsByTweetId(List<String> tweetIdList);
 }
