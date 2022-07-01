@@ -152,13 +152,13 @@ public class TweetServiceImpl implements TweetService {
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug(exceptionMsg, this.getClass().getSimpleName());
 				}
-				throw new ResourceNotFoundException(noTweetMsg);
 			}
 			else {
 				tweetList.add(tweet.get());
 			}
 		});
-		
+		if(tweetList.size()==0)
+			throw new ResourceNotFoundException(noTweetMsg);
 		return tweetList;
 	}
 
