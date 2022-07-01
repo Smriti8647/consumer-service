@@ -107,7 +107,12 @@ public class UpdateController {
 			@PathVariable String loginId) {
 		try {
 			String result = userService.forgotPassword(forgotPasswordRequest, loginId);
-			return new ResponseEntity<>(result, HttpStatus.OK);
+			if(result=="Succesfully Updated Password") {
+				return new ResponseEntity<>(result, HttpStatus.OK);
+			}
+			else {
+				return new ResponseEntity<>(result, HttpStatus.CONFLICT);
+			}
 		} catch (ResourceNotFoundException e) {
 			return new ResponseEntity<>("User not Found", HttpStatus.NOT_FOUND);
 

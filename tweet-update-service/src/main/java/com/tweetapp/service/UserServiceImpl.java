@@ -136,7 +136,7 @@ public class UserServiceImpl implements UserService {
 		if (user.get().getQuestion().equalsIgnoreCase(request.getQues())  && user.get().getAns().equalsIgnoreCase(request.getAns())) {
 			user.get().setPassword(request.getNewPassword());
 			userRepository.save(user.get());
-			return "Succesfully Updated Passwoed";
+			return "Succesfully Updated Password";
 		} else {
 			return "Request failed, question/answer does not match";
 		}
